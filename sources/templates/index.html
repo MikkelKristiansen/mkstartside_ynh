@@ -310,6 +310,31 @@
       color: #c0392b;
       padding-left: 1rem;
     }
+
+    @media (max-width: 768px) {
+      body {
+        grid-template-columns: 1fr;
+      }
+
+      .kolonne {
+        padding: 2rem 1.2rem;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .kolonne:last-child { border-bottom: none; }
+
+      .uge-nummer {
+        font-size: 5rem;
+      }
+
+      .midt {
+        align-items: flex-start;
+      }
+
+      .kalender {
+        max-width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
