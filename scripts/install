@@ -1,0 +1,40 @@
+#!/bin/bash
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=== Kopiér app-filer ===
+ynh_script_progression "Kopierer app-filer..."
+cp -r "$YNH_APP_BASEDIR/sources/." "$install_dir/"
+chown -R "$app:www-data" "$install_dir"
+chmod -R o-rwx "$install_dir"
+
+#=== Standard config til data-mappen (bevares ved opgraderinger) ===
+ynh_script_progression "Opretter standard konfiguration..."
+if [ ! -f "$data_dir/config.yaml" ]; then
+    cp "$YNH_APP_BASEDIR/conf/config.yaml" "$data_dir/config.yaml"
+fi
+chown -R "$app:www-data" "$data_dir"
+chmod -R o-rwx "$data_dir"
+chmod u+rw "$data_dir/config.yaml"
+
+#=== Python virtualenv + dependencies ===
+ynh_script_progression "Installerer Python-afhængigheder (kan tage et par minutter)..."
+python3 -m venv "$install_dir/venv"
+"$install_dir/venv/bin/pip" install --quiet --upgrade pip
+"$install_dir/venv/bin/pip" install --quiet -r "$install_dir/requirements.txt"
+
+#=== Nginx ===
+ynh_script_progression "Konfigurerer nginx..."
+ynh_config_add_nginx
+
+#=== Systemd ===
+ynh_script_progression "Konfigurerer systemd-service..."
+ynh_config_add_systemd
+
+yunohost service add "$app" --description="MK Startside" --log="systemd"
+
+#=== Start ===
+ynh_script_progression "Starter tjenesten..."
+ynh_systemctl --service="$app" --action="start"
+
+ynh_script_progression "Installation fuldført!" --last

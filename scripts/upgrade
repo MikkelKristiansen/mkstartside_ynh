@@ -1,0 +1,28 @@
+#!/bin/bash
+source _common.sh
+source /usr/share/yunohost/helpers
+
+ynh_script_progression "Stopper tjenesten midlertidigt..."
+ynh_systemctl --service="$app" --action="stop"
+
+#=== Opdatér app-filer (overskriv ikke config.yaml i data_dir) ===
+ynh_script_progression "Opdaterer app-filer..."
+cp -r "$YNH_APP_BASEDIR/sources/." "$install_dir/"
+chown -R "$app:www-data" "$install_dir"
+chmod -R o-rwx "$install_dir"
+
+#=== Opdatér Python-afhængigheder ===
+ynh_script_progression "Opdaterer Python-afhængigheder..."
+"$install_dir/venv/bin/pip" install --quiet --upgrade pip
+"$install_dir/venv/bin/pip" install --quiet -r "$install_dir/requirements.txt"
+
+#=== Opdatér nginx og systemd ===
+ynh_script_progression "Opdaterer konfiguration..."
+ynh_config_add_nginx
+ynh_config_add_systemd
+
+#=== Genstart ===
+ynh_script_progression "Genstarter tjenesten..."
+ynh_systemctl --service="$app" --action="start"
+
+ynh_script_progression "Opgradering fuldført!" --last

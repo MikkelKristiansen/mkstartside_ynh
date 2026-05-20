@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Startside</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f0e8;
+      --fg: #2a2a2a;
+      --muted: #888;
+      --border: #ddd8ce;
+      --accent: #4a7fa5;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+    }
+
+    body {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 0;
+      min-height: 100vh;
+    }
+
+    .kolonne {
+      padding: 3rem 2rem;
+      border-right: 1px solid var(--border);
+    }
+    .kolonne:last-child { border-right: none; }
+
+    /* --- Venstre: Links --- */
+    .links h2 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .links ul {
+      list-style: none;
+    }
+
+    .links li + li { margin-top: 0.6rem; }
+
+    .links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.875rem;
+      color: var(--fg);
+      text-decoration: none;
+      display: block;
+      padding: 0.35rem 0.6rem;
+      border-radius: 4px;
+      transition: background 0.12s;
+    }
+    .links a:hover {
+      background: var(--border);
+    }
+
+    .rss-liste {
+      list-style: none;
+    }
+
+    .rss-item {
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .rss-item:last-child { border-bottom: none; }
+
+    .rss-kilde {
+      display: block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .rss-titel {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--fg);
+      text-decoration: none;
+      display: block;
+      line-height: 1.35;
+    }
+    .rss-titel:hover { text-decoration: underline; }
+
+    .rss-fejl {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* --- Midt: Uge + Kalender --- */
+    .midt {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .uge-blok {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .uge-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .uge-nummer {
+      font-family: 'DM Mono', monospace;
+      font-size: 7rem;
+      font-weight: 300;
+      line-height: 1;
+      color: var(--fg);
+      letter-spacing: -0.03em;
+    }
+
+    .dato {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .kalender {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .kalender h2 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .begivenhed {
+      display: grid;
+      grid-template-columns: 1.2rem 3.5rem 1fr;
+      align-items: baseline;
+      gap: 0 0.5rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+    }
+    .begivenhed:last-child { border-bottom: none; }
+
+    .begivenhed .prik {
+      font-size: 0.65rem;
+      line-height: 1.6;
+    }
+
+    .begivenhed .tid {
+      color: var(--muted);
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+
+    .begivenhed .titel {
+      color: var(--fg);
+    }
+
+    .ingen-aftaler {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* --- Højre: Vejr --- */
+    .vejr h2 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .vejr-by {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
+
+    .vejr-hoved {
+      font-size: 2.5rem;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .vejr-beskrivelse {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+    }
+
+    .vejr-detaljer {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .vejr-detaljer .linje {
+      color: var(--fg);
+    }
+
+    .vejr-detaljer .label {
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .vejr-fejl {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .vejr-timer {
+      margin-top: 1.5rem;
+    }
+
+    .vejr-timer-header {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .vejr-time-linje {
+      display: grid;
+      grid-template-columns: 3rem 1.4rem 2.8rem 2rem;
+      gap: 0 0.4rem;
+      align-items: baseline;
+      padding: 0.2rem 0;
+      border-bottom: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.82rem;
+    }
+    .vejr-time-linje:last-child { border-bottom: none; }
+
+    .vejr-tid   { color: var(--muted); }
+    .vejr-emoji { font-size: 0.85rem; }
+    .vejr-temp  { color: var(--fg); }
+    .vejr-nedbor { color: var(--muted); font-size: 0.75rem; }
+
+    .server-liste { list-style: none; }
+
+    .server-item {
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.82rem;
+    }
+    .server-item:last-child { border-bottom: none; }
+
+    .server-navn { display: block; margin-bottom: 0.15rem; }
+
+    .server-dot { font-size: 0.65rem; }
+    .server-dot.online  { color: #5a9e5a; }
+    .server-dot.offline { color: #c0392b; }
+
+    .server-stats {
+      display: flex;
+      gap: 0.7rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      padding-left: 1rem;
+    }
+
+    .server-offline {
+      font-size: 0.75rem;
+      color: #c0392b;
+      padding-left: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Venstre: Links -->
+  <aside class="kolonne links">
+    <h2>Links</h2>
+    <ul>
+      {% for link in links %}
+      <li><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.titel }}</a></li>
+      {% endfor %}
+    </ul>
+
+    {% if rss %}
+    <h2 style="margin-top: 2rem;">RSS</h2>
+    <ul class="rss-liste">
+      {% for feed in rss %}
+      <li class="rss-item">
+        <span class="rss-kilde">{{ feed.titel }}</span>
+        {% if feed.seneste_titel %}
+        <a href="{{ feed.seneste_url }}" target="_blank" rel="noopener" class="rss-titel">{{ feed.seneste_titel }}</a>
+        {% else %}
+        <span class="rss-fejl">Kunne ikke hentes</span>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </aside>
+
+  <!-- Midt: Uge + Kalender -->
+  <main class="kolonne midt">
+    <div class="uge-blok">
+      <div class="uge-label">Uge</div>
+      <div class="uge-nummer">{{ ugenummer }}</div>
+      <div class="dato">{{ dato_dansk }}</div>
+    </div>
+
+    <div class="kalender">
+      <h2>I dag</h2>
+      {% if begivenheder %}
+        {% for b in begivenheder %}
+        <div class="begivenhed">
+          <span class="prik" style="color: {{ b.kalender_farve }}">●</span>
+          <span class="tid">
+            {%- if b.hele_dagen -%}
+              &nbsp;
+            {%- else -%}
+              {{ b.start }}
+            {%- endif -%}
+          </span>
+          <span class="titel">{{ b.titel }}</span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p class="ingen-aftaler">Ingen aftaler i dag</p>
+      {% endif %}
+    </div>
+  </main>
+
+  <!-- Højre: Vejr -->
+  <aside class="kolonne vejr">
+    <h2>Vejr</h2>
+    {% if vejr %}
+      <div class="vejr-by">{{ by }}</div>
+      <div class="vejr-hoved">{{ vejr.dagsoversigt.emoji }}</div>
+      <div class="vejr-beskrivelse">{{ vejr.dagsoversigt.beskrivelse }}</div>
+      <div class="vejr-detaljer">
+        <div class="linje">
+          <span class="label">Maks</span>
+          {{ vejr.dagsoversigt.max_temp }}°C
+        </div>
+        <div class="linje">
+          <span class="label">Min &nbsp;</span>
+          {{ vejr.dagsoversigt.min_temp }}°C
+        </div>
+        <div class="linje">
+          <span class="label">Nedbør</span>
+          {{ vejr.dagsoversigt.nedbor }} mm
+        </div>
+      </div>
+
+      {% if vejr.timer %}
+      <div class="vejr-timer">
+        <div class="vejr-timer-header">Næste 6 timer</div>
+        {% for t in vejr.timer %}
+        <div class="vejr-time-linje">
+          <span class="vejr-tid">{{ t.tid }}</span>
+          <span class="vejr-emoji">{{ t.emoji }}</span>
+          <span class="vejr-temp">{{ t.temp }}°</span>
+          <span class="vejr-nedbor">{{ t.nedbor_pct }}%</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% else %}
+      <p class="vejr-fejl">Vejrdata ikke tilgængelig</p>
+    {% endif %}
+
+    {% if servere %}
+    <h2 style="margin-top: 2rem;">Servere</h2>
+    <ul class="server-liste">
+      {% for s in servere %}
+      <li class="server-item">
+        <span class="server-navn">
+          <span class="server-dot {% if s.online %}online{% else %}offline{% endif %}">●</span>
+          {{ s.navn }}
+        </span>
+        {% if s.online %}
+        <span class="server-stats">
+          <span title="Load">⚡ {{ s.load }}</span>
+          <span title="RAM">🧠 {{ s.mem_pct }}%</span>
+          {% if s.temp %}<span title="Temp">🌡 {{ s.temp }}°</span>{% endif %}
+          <span title="Uptime">⏱ {{ s.uptime_h }}t</span>
+        </span>
+        {% else %}
+        <span class="server-offline">offline</span>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </aside>
+
+</body>
+</html>

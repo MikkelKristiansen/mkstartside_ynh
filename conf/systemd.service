@@ -1,0 +1,23 @@
+[Unit]
+Description=MK Startside
+After=network.target
+
+[Service]
+User=__APP__
+Group=__APP__
+WorkingDirectory=__INSTALL_DIR__
+ExecStart=__INSTALL_DIR__/venv/bin/gunicorn \
+    --workers 2 \
+    --bind 127.0.0.1:__PORT__ \
+    startside:app
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment=MKSTARTSIDE_CONFIG=__DATA_DIR__/config.yaml
+
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

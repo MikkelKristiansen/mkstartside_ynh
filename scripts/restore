@@ -1,0 +1,24 @@
+#!/bin/bash
+source _common.sh
+source /usr/share/yunohost/helpers
+
+ynh_script_progression "Gendanner app-filer..."
+ynh_restore "$install_dir"
+chown -R "$app:www-data" "$install_dir"
+
+ynh_script_progression "Gendanner konfiguration..."
+ynh_restore "$data_dir"
+chown -R "$app:www-data" "$data_dir"
+
+ynh_script_progression "Gendanner nginx og systemd..."
+ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore "/etc/systemd/system/$app.service"
+
+systemctl daemon-reload
+ynh_systemctl --service="$app" --action="enable"
+ynh_systemctl --service="$app" --action="start"
+ynh_systemctl --service=nginx --action="reload"
+
+yunohost service add "$app" --description="MK Startside" --log="systemd"
+
+ynh_script_progression "Genopretning fuldført!" --last

@@ -1,0 +1,29 @@
+# MK Startside konfiguration
+# Denne fil ligger i /home/yunohost.app/mkstartside/config.yaml
+# Rediger den og genstart tjenesten: systemctl restart mkstartside
+
+by: Aarhus
+
+lokation:
+  lat: 56.15
+  lon: 10.21
+
+links:
+  - titel: Eksempel
+    url: https://example.com
+
+# Tilføj RSS-feeds her (valgfrit):
+# rss:
+#   - titel: Min feed
+#     url: https://example.com/feed.rss
+
+# Tilføj Google Kalender ICS-URL'er her (valgfrit):
+# kalendere:
+#   - navn: Min kalender
+#     farve: "#4a7fa5"
+#     ics_url: https://calendar.google.com/calendar/ical/.../basic.ics
+
+# Tilføj servere der eksponerer JSON-status på / (valgfrit):
+# servere:
+#   - navn: Min server
+#     url: http://192.168.1.10:9090

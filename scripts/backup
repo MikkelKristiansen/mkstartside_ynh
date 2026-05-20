@@ -1,0 +1,15 @@
+#!/bin/bash
+source _common.sh
+source /usr/share/yunohost/helpers
+
+ynh_script_progression "Sikkerhedskopierer app-filer..."
+ynh_backup "$install_dir"
+
+ynh_script_progression "Sikkerhedskopierer konfiguration..."
+ynh_backup "$data_dir"
+
+ynh_script_progression "Sikkerhedskopierer nginx og systemd..."
+ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_backup "/etc/systemd/system/$app.service"
+
+ynh_script_progression "Backup fuldført!" --last
