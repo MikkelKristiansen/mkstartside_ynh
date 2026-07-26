@@ -38,9 +38,19 @@ sudo -u apps /srv/apps/mkstartside/venv/bin/pip install -r requirements.txt
 ## statusd — hører til, men bor et andet sted
 
 Startsiden poller `statusd`, en lille JSON-server med load, RAM, temperatur og
-uptime. Den kører på **Proxmox-værten** (192.168.0.67:9090), ikke i denne
+uptime. Kilden ligger i `statusd/` her i repoet; den **kører** på
+**Proxmox-værten** (192.168.0.67:9090) fra `/opt/statusd.py`, ikke i denne
 container — hypervisorens tal siger mere end en enkelt LXC's, som er bundet af
 sin egen RAM-kvote.
+
+Opdatering er en filkopi, ikke et pull — den ligger uden for enhver app-mappe:
+
+```bash
+scp statusd/statusd.py root@192.168.0.67:/opt/statusd.py
+ssh root@192.168.0.67 systemctl restart statusd
+```
+
+Unitten kører med `DynamicUser=yes`; scriptet læser kun `/proc`.
 
 Der står stadig en ubrugt `statusd` i `apps-mk`. Den kan slås fra uden
 konsekvens.
