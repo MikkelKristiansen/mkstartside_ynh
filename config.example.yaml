@@ -1,0 +1,54 @@
+by: Aarhus
+lokation:
+  lat: 56.15
+  lon: 10.21
+
+links:
+  - titel: Gemini
+    url: https://gemini.google.com/
+  - titel: Claude
+    url: https://claude.ai/
+  - titel: Miniflux
+    url: https://miniflux.mkuv.dk/unread
+  - titel: Wallabag
+    url: https://wallabag.mkuv.dk/
+  - titel: Paperless
+    url: https://paperless.mkuv.dk/
+  - titel: PiHole
+    url: http://192.168.0.124/admin/login.php
+  - titel: EyeMaster
+    url: http://eyemaster.mk
+  - titel: SMS
+    url: https://messages.google.com/web/conversations
+  - titel: Mine opskrifter
+    url: https://opskrifter.mkuv.dk/
+  - titel: Min have
+    url: https://haven.mkuv.dk
+  - titel: DND
+    url: https://dnd.mkuv.dk/
+servere:
+  - navn: Proxmox
+    url: http://192.168.0.67:9090
+  - navn: Pihole.mk
+    url: http://192.168.0.124:9090
+      
+
+rss:
+  - titel: Shaarli
+    url: https://shaarli.mkuv.dk/feed/rss?
+  - titel: Craphound
+    url: https://craphound.com/feed/
+
+kalendere:
+  - navn: Mikkel
+    farve: "#924420"
+    ics_url: https://calendar.google.com/calendar/ical/mester.kristiansen%40gmail.com/private-820189a02ed486fa4947176304305e92/basic.ics
+  - navn: Familie
+    farve: "#bdb634"
+    ics_url: https://calendar.google.com/calendar/ical/family02478080494308595403%40group.calendar.google.com/private-bad4bc921d7f5b2ce595f63b02da05ca/basic.ics
+  - navn: Mikkel-Astrid
+    farve: #93c00b
+    ics_url: https://calendar.google.com/calendar/ical/l0ip3t6rl1t3fa94vofvbi84vg%40group.calendar.google.com/private-418cb9b9bc485b1dd720c0cd5998f8de/basic.ics
+  - navn: Arbejde
+    farve: #bf9608
+    ics_url: https://calendar.google.com/calendar/ical/qgrcs7dpit6cc1p97oudst9a30%40group.calendar.google.com/private-edfc29746409b23aa95b82762eff86bc/basic.ics  
