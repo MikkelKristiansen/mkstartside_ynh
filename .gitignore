@@ -6,3 +6,4 @@ __pycache__/
 # Den levende konfiguration bor på serveren og redigeres dér.
 # Repoet har kun config.example.yaml — så git pull aldrig overskriver dine links.
 config.yaml
+config.yaml.*

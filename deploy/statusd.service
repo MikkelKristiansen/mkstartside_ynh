@@ -1,0 +1,22 @@
+[Unit]
+Description=statusd - load/RAM/temp/uptime som JSON til mkstartside
+After=network.target
+
+[Service]
+# Kilden ligger i mkstartside-repoet, ikke løst i /opt. Så følger den med
+# `git pull` som resten af appen, og der er kun ét sted at rette den.
+ExecStart=/usr/bin/python3 /srv/apps/mkstartside/statusd/statusd.py
+Restart=on-failure
+RestartSec=5
+
+# DynamicUser giver tjenesten en tilfældig UID uden hjemmemappe — rigeligt, da
+# statusd kun læser /proc og /sys og aldrig skriver noget.
+DynamicUser=yes
+# Men repo-mappen er 750 apps:apps, så en tilfældig UID kan ikke traversere ind
+# og læse sin egen kildefil. Gruppen apps har r-x hele vejen, så dette ene
+# tilvalg er nok. Alternativet — User=apps — ville give statusd læseadgang til
+# ALLE app-data, og det har den intet brug for.
+SupplementaryGroups=apps
+
+[Install]
+WantedBy=multi-user.target
