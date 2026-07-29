@@ -35,27 +35,50 @@ Er `requirements.txt` ændret:
 sudo -u apps /srv/apps/mkstartside/venv/bin/pip install -r requirements.txt
 ```
 
-## statusd — hører til, men bor et andet sted
+## statusd — hører til, men bor flere andre steder
 
-Startsiden poller `statusd`, en lille JSON-server med load, RAM, temperatur og
-uptime. Kilden ligger i `statusd/` her i repoet; den **kører** på
-**Proxmox-værten** (192.168.0.67:9090) fra `/opt/statusd.py`, ikke i denne
-container — hypervisorens tal siger mere end en enkelt LXC's, som er bundet af
-sin egen RAM-kvote.
+Startsiden poller `statusd`, en lille JSON-agent med load, RAM, temperatur og
+uptime. Kilden ligger i `statusd/` her i repoet, men den **kører** på fire
+værter — én fil, samme kode alle steder. Hvad den måler ud over grundtallene
+styres af miljøvariabler i unit-filen, ikke af koden:
 
-Opdatering er en filkopi, ikke et pull — den ligger uden for enhver app-mappe:
+| Vært | Unit i `deploy/` | Måler også | Sti |
+|---|---|---|---|
+| Proxmox 192.168.0.67 | `statusd-proxmox.service` | alle LXC'er | `/opt/statusd.py` |
+| apps-docker 192.168.0.71 | `statusd-apps-docker.service` | alle docker-containere | `/opt/statusd.py` |
+| apps-mk 192.168.0.73 | `statusd-apps-mk.service` | systemd-tjenester | fra repoet |
+| pihole2 192.168.0.124 | — | kun grundtal | `/opt/statusd.py` |
+
+Grunden til at Proxmox-værten er med: hypervisorens tal siger mere end en enkelt
+LXC's, som er bundet af sin egen RAM-kvote.
+
+`statusd` kører med `DynamicUser=yes` og har **ingen rettigheder** ud over det
+alle har — bortset fra ét sted:
+
+- **LXC'er** læses af `/sys/fs/cgroup/lxc/<vmid>` (en mappe = containeren kører)
+  og `/var/lib/lxc/<vmid>/config` (navnet). Ikke `pct`, som kræver root, og
+  ikke `/etc/pve/lxc/*.conf`, som er 640 `root:www-data`.
+- **Docker** kræver `SupplementaryGroups=docker`. Det er den eneste rigtige
+  rettighed nogen af agenterne har, og den gives kun i apps-docker.
+- **systemd-tjenester** slås op med `systemctl is-active`, som alle må.
+
+Opdatering på de to værter uden repoet er en filkopi, ikke et pull:
 
 ```bash
 scp statusd/statusd.py root@192.168.0.67:/opt/statusd.py
 ssh root@192.168.0.67 systemctl restart statusd
 ```
 
-Unitten kører med `DynamicUser=yes`; scriptet læser kun `/proc`.
+Skal en tjeneste med i apps-mk's liste, er det unit-filen der rettes:
 
-Der står stadig en ubrugt `statusd` i `apps-mk`. Den kan slås fra uden
-konsekvens.
+```
+Environment=STATUSD_UNITS=nginx,flask_dnd,have_inbox,mkstartside
+```
 
-`servere:`-listen i `config.yaml` peger på Proxmox og på pihole2 (192.168.0.124).
+`update.sh` findes ikke her — unit-filerne i `deploy/` er kopier, og de
+udrulles i hånden.
+
+`servere:`-listen i `config.yaml` peger på alle fire.
 
 ## Tidligere YunoHost-app
 

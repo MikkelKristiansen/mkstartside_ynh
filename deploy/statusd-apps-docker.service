@@ -1,0 +1,20 @@
+[Unit]
+Description=statusd - vaertsstatus + docker som JSON til mkstartside (apps-docker)
+After=network.target docker.service
+
+[Service]
+# Containeren har ikke repoet — her er statusd.py en filkopi i /opt. Se README.
+ExecStart=/usr/bin/python3 /opt/statusd.py
+Restart=on-failure
+RestartSec=5
+
+Environment=STATUSD_DOCKER=1
+
+DynamicUser=yes
+# Docker-socket'en er 660 root:docker. Dette er det eneste sted statusd har brug
+# for en rettighed den ikke får gratis — og docker-gruppen er reelt root, så den
+# gives kun her, hvor det er nødvendigt.
+SupplementaryGroups=docker
+
+[Install]
+WantedBy=multi-user.target

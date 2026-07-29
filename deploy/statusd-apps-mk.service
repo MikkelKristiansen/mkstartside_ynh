@@ -1,5 +1,5 @@
 [Unit]
-Description=statusd - load/RAM/temp/uptime som JSON til mkstartside
+Description=statusd - vaertsstatus som JSON til mkstartside (apps-mk)
 After=network.target
 
 [Service]
@@ -8,6 +8,10 @@ After=network.target
 ExecStart=/usr/bin/python3 /srv/apps/mkstartside/statusd/statusd.py
 Restart=on-failure
 RestartSec=5
+
+# De tjenester startsiden viser en prik for. Listen står her og ikke i koden,
+# så statusd.py forbliver den samme fil på alle værter.
+Environment=STATUSD_UNITS=nginx,flask_dnd,have_inbox,mkstartside
 
 # DynamicUser giver tjenesten en tilfældig UID uden hjemmemappe — rigeligt, da
 # statusd kun læser /proc og /sys og aldrig skriver noget.

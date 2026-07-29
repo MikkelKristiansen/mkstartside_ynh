@@ -1,0 +1,19 @@
+[Unit]
+Description=statusd - vaertsstatus + LXC som JSON til mkstartside (Proxmox-vaerten)
+After=network.target
+
+[Service]
+# Værten har ikke repoet — her er statusd.py en filkopi i /opt. Se README.
+ExecStart=/usr/bin/python3 /opt/statusd.py
+Restart=on-failure
+RestartSec=5
+
+# Rapportér også hvilke LXC'er der kører. statusd læser /sys/fs/cgroup/lxc og
+# /var/lib/lxc frem for at kalde `pct` — begge er læsbare for alle, så agenten
+# kan blive ved med at køre helt uden rettigheder.
+Environment=STATUSD_LXC=1
+
+DynamicUser=yes
+
+[Install]
+WantedBy=multi-user.target
