@@ -88,7 +88,12 @@ alle har — bortset fra ét sted:
   ikke `/etc/pve/lxc/*.conf`, som er 640 `root:www-data`.
 - **Docker** kræver `SupplementaryGroups=docker`. Det er den eneste rigtige
   rettighed nogen af agenterne har, og den gives kun i apps-docker.
-- **systemd-tjenester** slås op med `systemctl is-active`, som alle må.
+- **systemd-tjenester** slås op med `systemctl is-active`. Alle *må* det, men
+  ikke en `DynamicUser` — dbus-daemon kan ikke slå en UID op der ikke står i
+  `/etc/passwd`, så opslaget fejler med "Transport endpoint is not connected"
+  og hver eneste tjeneste ser ud til at være nede. `apps-mk` er derfor den ene
+  agent der kører som en rigtig systembruger (`useradd --system
+  --no-create-home --shell /usr/sbin/nologin statusd`) i stedet.
 
 Opdatering på de to værter uden repoet er en filkopi, ikke et pull:
 
