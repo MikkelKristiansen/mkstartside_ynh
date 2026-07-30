@@ -9,9 +9,31 @@ lokation:
   lat: 56.15
   lon: 10.21
 
-links:
-  - titel: Eksempel
-    url: https://example.com
+# Links samles i grupper — det er grupperne der gør siden overskuelig.
+# `status:` er valgfri. Er den sat, får linket en prik der viser om tjenesten
+# kører. Nøglen slås op i det statusd-agenterne (se servere: nedenfor) svarer,
+# og har formen <slags>:<navn>:
+#
+#   docker:vikunja    en container på en vært med STATUSD_DOCKER=1
+#   unit:flask_dnd    en systemd-tjeneste nævnt i vertens STATUSD_UNITS
+#   lxc:apps-mk       en LXC på Proxmox-værten (STATUSD_LXC=1)
+#   vaert:Proxmox     selve agenten — navnet er det fra servere: nedenfor
+#
+# Findes nøglen ikke i svaret (fx fordi agenten er nede), bliver prikken grå
+# "ukendt" i stedet for rød — vi ved det ikke, og det er ikke det samme som nede.
+# Links uden `status:` får ingen prik. Det er det rigtige for alt vi ikke selv
+# driver, fx eksterne sider.
+grupper:
+  - titel: Eksterne
+    links:
+      - titel: Eksempel
+        url: https://example.com
+
+  - titel: Egne apps
+    links:
+      - titel: Min app
+        url: https://app.example.com
+        status: unit:min_app
 
 # Tilføj RSS-feeds her (valgfrit):
 # rss:
@@ -24,7 +46,8 @@ links:
 #     farve: "#4a7fa5"
 #     ics_url: https://calendar.google.com/calendar/ical/.../basic.ics
 
-# Tilføj servere der eksponerer JSON-status på / (valgfrit):
+# statusd-agenterne der skal spørges (valgfrit). Se statusd/ og README.
+# Hver vært måler load/RAM/temp/uptime, og derudover det unit-filen beder om.
 # servere:
 #   - navn: Min server
 #     url: http://192.168.1.10:9090

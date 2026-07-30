@@ -4,6 +4,11 @@
   --muted: #888;
   --border: #ddd8ce;
   --accent: #4a7fa5;
+  /* Tre tilstande, tre farver. "Ukendt" er bevidst graa og ikke gul: at en
+     agent ikke svarer er ikke en fejl ved tjenesten, og maa ikke larme som en. */
+  --oppe: #5a9e5a;
+  --nede: #c0392b;
+  --ukendt: #b8b2a6;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,25 +45,45 @@ body {
   margin-bottom: 1.5rem;
 }
 
+/* Gruppe nr. 2 og frem faar luft over sig. Overskriften er i sig selv
+   adskillelsen — ingen streger, saa listen ikke bliver et skema. */
+.links h2.senere { margin-top: 2rem; }
+
 .links ul {
   list-style: none;
 }
 
-.links li + li { margin-top: 0.6rem; }
+.links li + li { margin-top: 0.15rem; }
 
 .links a {
   font-family: 'DM Mono', monospace;
   font-size: 0.875rem;
   color: var(--fg);
   text-decoration: none;
-  display: block;
-  padding: 0.35rem 0.6rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0.3rem 0.6rem;
   border-radius: 4px;
   transition: background 0.12s;
 }
 .links a:hover {
   background: var(--border);
 }
+
+/* Status-prikken. Bredden er fast, saa titlerne staar paa linje ogsaa naar
+   nogle links ikke har en prik. */
+.prik {
+  font-size: 0.55rem;
+  line-height: 1;
+  flex: 0 0 0.55rem;
+}
+.prik.oppe   { color: var(--oppe); }
+.prik.nede   { color: var(--nede); }
+.prik.ukendt { color: var(--ukendt); }
+
+/* Links uden prik ville ellers rykke ind til venstre. */
+.links a:not(:has(.prik)) { padding-left: 1.6rem; }
 
 .rss-liste {
   list-style: none;
@@ -271,6 +296,52 @@ body {
 .vejr-temp  { color: var(--fg); }
 .vejr-nedbor { color: var(--muted); font-size: 0.75rem; }
 
+/* --- Drift --- */
+.vejr h2.senere { margin-top: 2rem; }
+
+/* Normaltilstanden fylder én linje. Det er meningen: er der ingenting at
+   sige, skal driften heller ikke fylde noget. */
+.alt-oppe {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.nede-liste { list-style: none; }
+.nede-liste li {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--nede);
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0.12rem 0;
+}
+.nede-vaert { color: var(--muted); font-size: 0.7rem; margin-left: auto; }
+
+/* LXC'erne som smaa maerkater — fem containere paa to linjer siger mere
+   paa mindre plads end fem listepunkter. */
+.lxc-stribe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0.8rem 0;
+}
+.lxc {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.lxc.oppe { border-color: var(--oppe); color: var(--oppe); }
+/* En stoppet container fyldes helt ud — den skal kunne ses uden at man leder. */
+.lxc.nede { border-color: var(--nede); background: var(--nede); color: #fff; }
+
 .server-liste { list-style: none; }
 
 .server-item {
@@ -281,11 +352,12 @@ body {
 }
 .server-item:last-child { border-bottom: none; }
 
-.server-navn { display: block; margin-bottom: 0.15rem; }
-
-.server-dot { font-size: 0.65rem; }
-.server-dot.online  { color: #5a9e5a; }
-.server-dot.offline { color: #c0392b; }
+.server-navn {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin-bottom: 0.15rem;
+}
 
 .server-stats {
   display: flex;
@@ -297,7 +369,7 @@ body {
 
 .server-offline {
   font-size: 0.75rem;
-  color: #c0392b;
+  color: var(--nede);
   padding-left: 1rem;
 }
 

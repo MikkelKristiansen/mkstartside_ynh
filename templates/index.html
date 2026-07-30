@@ -13,12 +13,22 @@
 
   <!-- Venstre: Links -->
   <aside class="kolonne links">
-    <h2>Links</h2>
+    {% for gruppe in grupper %}
+    <h2{% if not loop.first %} class="senere"{% endif %}>{{ gruppe.titel }}</h2>
     <ul>
-      {% for link in links %}
-      <li><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.titel }}</a></li>
+      {% for link in gruppe.links %}
+      <li>
+        <a href="{{ link.url }}" target="_blank" rel="noopener">
+          {#- tilstand er None for links vi ikke overvaager; de faar ingen prik,
+              saa oejet kun moeder en prik der hvor den betyder noget. -#}
+          {% if link.tilstand %}<span class="prik {{ link.tilstand }}"
+            title="{{ {'oppe': 'Kører', 'nede': 'Nede', 'ukendt': 'Ingen kontakt til agenten'}[link.tilstand] }}">●</span>{% endif %}
+          {{ link.titel }}
+        </a>
+      </li>
       {% endfor %}
     </ul>
+    {% endfor %}
 
     {% if rss %}
     <h2 style="margin-top: 2rem;">RSS</h2>
@@ -106,13 +116,33 @@
       <p class="vejr-fejl">Vejrdata ikke tilgængelig</p>
     {% endif %}
 
-    {% if servere %}
-    <h2 style="margin-top: 2rem;">Servere</h2>
+    {% if drift.vaerter %}
+    <h2 class="senere">Drift</h2>
+
+    {# Det vigtigste foerst: staar her ingenting, er alt som det skal vaere. #}
+    {% if drift.nede %}
+    <ul class="nede-liste">
+      {% for n in drift.nede %}
+      <li><span class="prik nede">●</span> {{ n.navn }} <span class="nede-vaert">{{ n.vaert }}</span></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="alt-oppe"><span class="prik oppe">●</span> Alt kører</p>
+    {% endif %}
+
+    {% if drift.lxc %}
+    <div class="lxc-stribe">
+      {% for c in drift.lxc %}
+      <span class="lxc {% if c.oppe %}oppe{% else %}nede{% endif %}">{{ c.navn }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
     <ul class="server-liste">
-      {% for s in servere %}
+      {% for s in drift.vaerter %}
       <li class="server-item">
         <span class="server-navn">
-          <span class="server-dot {% if s.online %}online{% else %}offline{% endif %}">●</span>
+          <span class="prik {% if s.online %}oppe{% else %}nede{% endif %}">●</span>
           {{ s.navn }}
         </span>
         {% if s.online %}
@@ -123,7 +153,7 @@
           <span title="Uptime">⏱ {{ s.uptime_h }}t</span>
         </span>
         {% else %}
-        <span class="server-offline">offline</span>
+        <span class="server-offline">svarer ikke</span>
         {% endif %}
       </li>
       {% endfor %}
