@@ -17,6 +17,34 @@ Den er derfor i `.gitignore`; repoet har kun `config.example.yaml` som skabelon.
 Så kan `git pull` aldrig overskrive dine links. Samme mønster som `haven.yaml`
 i [have.py](https://github.com/MikkelKristiansen/have.py).
 
+## Links og status-prikker
+
+Links står i `grupper:` — det er grupperingen der gør siden overskuelig.
+Hvert link kan pege på en tjeneste med `status:`, og får så en prik:
+
+```yaml
+grupper:
+  - titel: Egne apps
+    links:
+      - titel: DND
+        url: https://dnd.mkuv.dk/
+        status: unit:flask_dnd
+```
+
+Nøglen har formen `<slags>:<navn>` og slås op i det `statusd`-agenterne svarer:
+
+| Nøgle | Kommer fra |
+|---|---|
+| `docker:vikunja` | vært med `STATUSD_DOCKER=1` |
+| `unit:flask_dnd` | vært hvis `STATUSD_UNITS` nævner den |
+| `lxc:apps-mk` | Proxmox-værten (`STATUSD_LXC=1`) |
+| `vaert:Proxmox` | selve agenten — navnet fra `servere:` |
+
+🟢 kører · 🔴 nede · ⚪ **ukendt** — nøglen fandtes ikke i svaret, typisk fordi
+agenten ikke svarede. At en agent tier er ikke det samme som at tjenesten er
+nede, og de to må ikke se ens ud. Links uden `status:` får ingen prik; det er
+det rigtige for alt vi ikke selv driver.
+
 ## Opdatering
 
 ```bash
