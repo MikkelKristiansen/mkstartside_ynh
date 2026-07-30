@@ -38,6 +38,7 @@ Nøglen har formen `<slags>:<navn>` og slås op i det `statusd`-agenterne svarer
 | `docker:vikunja` | vært med `STATUSD_DOCKER=1` |
 | `unit:flask_dnd` | vært hvis `STATUSD_UNITS` nævner den |
 | `lxc:apps-mk` | Proxmox-værten (`STATUSD_LXC=1`) |
+| `disk:Volume 1` | Synology-NAS'en via `synologyd` |
 | `vaert:Proxmox` | selve agenten — navnet fra `servere:` |
 
 🟢 kører · 🔴 nede · ⚪ **ukendt** — nøglen fandtes ikke i svaret, typisk fordi
@@ -112,6 +113,34 @@ Environment=STATUSD_UNITS=nginx,flask_dnd,have_inbox,mkstartside
 udrulles i hånden.
 
 `servere:`-listen i `config.yaml` peger på alle fire.
+
+### synologyd — NAS'en, som ikke kan køre en agent
+
+DSM har ikke systemd, og noget installeret i hånden på NAS'en ville ikke
+overleve en DSM-opdatering. `statusd/synologyd.py` kører derfor **på apps-mk**,
+spørger NAS'en over SNMP og svarer i præcis samme JSON-format på port 9091. For
+startsiden er NAS'en dermed bare endnu en linje i `servere:` — den peger bare på
+`192.168.0.73:9091` og ikke på NAS'ens egen adresse.
+
+Slå SNMP til i DSM under **Kontrolpanel → Terminal & SNMP → SNMP** (v2c, LAN
+only). Community'et er reelt et kodeord og sendes i klartekst, så det står
+hverken i git eller i unit-filen:
+
+```bash
+install -m 640 /dev/null /etc/synologyd.env
+echo "SYNOLOGY_COMMUNITY=..." > /etc/synologyd.env
+```
+
+Den rapporterer load, RAM, systemtemperatur, oppetid og hver disk/volume.
+To fælder er værd at kende:
+
+- **`sysUpTime` (`1.3.6.1.2.1.1.3.0`) er SNMP-agentens oppetid**, ikke systemets
+  — den nulstilles hver gang SNMP slås til i DSM. Brug `hrSystemUptime`
+  (`1.3.6.1.2.1.25.1.1.0`).
+- **NAS'en slukker helt 22.30–05.45.** Er den tavs inde i det vindue
+  (`SYNOLOGY_SOVER` i unit-filen), melder `synologyd` `sover` og får en grå
+  prik. Uden for vinduet er tavshed en rigtig fejl, og prikken bliver rød. En
+  rød alarm syv timer hver nat ville bare lære en at ignorere røde prikker.
 
 ## Tidligere YunoHost-app
 

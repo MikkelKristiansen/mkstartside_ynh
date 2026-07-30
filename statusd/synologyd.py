@@ -92,8 +92,12 @@ def grundtal():
     }
 
 
-def komponenter():
-    """Volumes og diske som oppe/nede-poster, i statusd's `units`-form.
+def diske():
+    """Volumes og fysiske diske som oppe/nede-poster.
+
+    Feltet hedder `diske` og ikke `units`, saa opslagsnoeglen bliver
+    `disk:Volume 1`. "unit" betyder systemd-tjeneste alle andre steder i
+    systemet, og en disk er ikke en tjeneste.
 
     De to walks svarer i samme raekkefoelge, saa navn nr. i hoerer til
     tilstand nr. i — samme antagelse som statusd goer om `systemctl is-active`.
@@ -132,7 +136,7 @@ def tilstand():
     data = grundtal()
     if data is None:
         return {"sover": True} if sover() else None
-    data["units"] = komponenter()
+    data["diske"] = diske()
     return data
 
 

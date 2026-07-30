@@ -9,7 +9,7 @@ from . import cache
 # Felterne i JSON'en fra statusd, og den forstavelse de får i opslaget.
 # "unit" i ental, fordi det er sådan man skriver det i config.yaml:
 # `status: unit:flask_dnd`.
-FELTER = {"lxc": "lxc", "docker": "docker", "units": "unit"}
+FELTER = {"lxc": "lxc", "docker": "docker", "units": "unit", "diske": "disk"}
 
 
 def _hent_vaert(server):
