@@ -1,0 +1,28 @@
+[Unit]
+Description=synologyd - Synology-NAS'ens SNMP som statusd-JSON til mkstartside
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /srv/apps/mkstartside/statusd/synologyd.py
+Restart=on-failure
+RestartSec=5
+
+Environment=SYNOLOGY_HOST=192.168.0.130
+# NAS'en slukker helt efter skema. Uden det her ville startsiden vise en roed
+# alarm syv timer hver nat; med det bliver prikken graa "ukendt" i vinduet, og
+# tavshed uden for vinduet er stadig en rigtig fejl.
+Environment=SYNOLOGY_SOVER=22:30-05:45
+
+# SNMPv2c-community'et er reelt et kodeord og sendes i klartekst, saa det staar
+# hverken i unit-filen eller i git. Filen er 640 root:root og laves i haanden:
+#     install -m 640 /dev/null /etc/synologyd.env
+#     echo "SYNOLOGY_COMMUNITY=..." > /etc/synologyd.env
+EnvironmentFile=/etc/synologyd.env
+
+# Samme systembruger som statusd paa denne vaert. Den laeser kun sin egen
+# kildefil og taler UDP med NAS'en — ingen rettigheder ud over det.
+User=statusd
+SupplementaryGroups=apps
+
+[Install]
+WantedBy=multi-user.target

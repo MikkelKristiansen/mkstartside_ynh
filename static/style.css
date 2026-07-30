@@ -373,6 +373,12 @@ body {
   padding-left: 1rem;
 }
 
+.server-sover {
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding-left: 1rem;
+}
+
 @media (max-width: 768px) {
   body {
     grid-template-columns: 1fr;

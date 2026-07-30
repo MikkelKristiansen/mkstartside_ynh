@@ -144,10 +144,12 @@
       {% for s in drift.vaerter %}
       <li class="server-item">
         <span class="server-navn">
-          <span class="prik {% if s.online %}oppe{% else %}nede{% endif %}">●</span>
+          <span class="prik {% if s.sover %}ukendt{% elif s.online %}oppe{% else %}nede{% endif %}">●</span>
           {{ s.navn }}
         </span>
-        {% if s.online %}
+        {% if s.sover %}
+        <span class="server-sover">sover efter skema</span>
+        {% elif s.online %}
         <span class="server-stats">
           <span title="Load">⚡ {{ s.load }}</span>
           <span title="RAM">🧠 {{ s.mem_pct }}%</span>

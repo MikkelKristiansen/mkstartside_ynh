@@ -44,6 +44,11 @@ def hent(servere):
 
     opslag, lxc, nede = {}, [], []
     for vaert in vaerter:
+        # En vaert der er slukket efter skema er hverken oppe eller nede. Ved
+        # slet ikke at saette noeglen faar den den graa "ukendt"-prik, og den
+        # holdes ude af nede-listen — ellers ville NAS'en larme hver nat.
+        if vaert.get("sover"):
+            continue
         opslag[f"vaert:{vaert['navn']}"] = vaert["online"]
         if not vaert["online"]:
             nede.append({"vaert": vaert["navn"], "navn": "svarer ikke"})
