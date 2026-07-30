@@ -31,7 +31,7 @@
     {% endfor %}
 
     {% if rss %}
-    <h2 style="margin-top: 2rem;">RSS</h2>
+    <h2 class="senere">RSS</h2>
     <ul class="rss-liste">
       {% for feed in rss %}
       <li class="rss-item">
@@ -116,8 +116,10 @@
       <p class="vejr-fejl">Vejrdata ikke tilgængelig</p>
     {% endif %}
 
+    {# "Status" og ikke "Drift": link-gruppen til venstre hedder Drift, og to
+       ens overskrifter paa samme skaerm laeses som det samme. #}
     {% if drift.vaerter %}
-    <h2 class="senere">Drift</h2>
+    <h2 class="senere">Status</h2>
 
     {# Det vigtigste foerst: staar her ingenting, er alt som det skal vaere. #}
     {% if drift.nede %}
