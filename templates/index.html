@@ -155,6 +155,12 @@
           <span title="RAM">🧠 {{ s.mem_pct }}%</span>
           {% if s.temp %}<span title="Temp">🌡 {{ s.temp }}°</span>{% endif %}
           <span title="Uptime">⏱ {{ s.uptime_h }}t</span>
+          {# Kun minecraftd sender spillere. Vaerten er "oppe" saa snart agenten
+             svarer, saa selve spillet kan godt vaere nede her — derfor staar
+             prikken for det i nede-listen ovenfor, ikke i dette tal. #}
+          {% if s.spillere %}
+          <span title="Spillere online{% if s.version %} — {{ s.version }}{% endif %}">🎮 {{ s.spillere.online }}/{{ s.spillere.max }}</span>
+          {% endif %}
         </span>
         {% else %}
         <span class="server-offline">svarer ikke</span>

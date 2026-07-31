@@ -1,0 +1,25 @@
+[Unit]
+Description=minecraftd - Minecraft-serverens tilstand som JSON til mkstartside
+After=network.target
+
+[Service]
+# Containeren har ikke repoet — her er minecraftd.py en filkopi i /opt, som på
+# Proxmox-værten. Se README.
+ExecStart=/usr/bin/python3 /opt/minecraftd.py
+Restart=on-failure
+RestartSec=5
+
+# Standardværdierne rammer allerede rigtigt (127.0.0.1:25565), men de står her
+# så porten kan flyttes uden at røre koden. Det er spil-porten — Simple Voice
+# Chat's UDP 24454 siger intet om, hvorvidt serveren tager imod spillere.
+Environment=MINECRAFT_HOST=127.0.0.1
+Environment=MINECRAFT_PORT=25565
+Environment=MINECRAFT_UNIT=minecraft
+
+# I modsætning til statusd på apps-mk kan denne agent godt køre med en dynamisk
+# UID: den spørger aldrig systemd, kun en TCP-socket og /proc, så dbus-fælden
+# med "Transport endpoint is not connected" gælder ikke her.
+DynamicUser=yes
+
+[Install]
+WantedBy=multi-user.target

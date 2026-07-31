@@ -39,6 +39,7 @@ Nøglen har formen `<slags>:<navn>` og slås op i det `statusd`-agenterne svarer
 | `unit:flask_dnd` | vært hvis `STATUSD_UNITS` nævner den |
 | `lxc:apps-mk` | Proxmox-værten (`STATUSD_LXC=1`) |
 | `disk:Volume 1` | Synology-NAS'en via `synologyd` |
+| `unit:minecraft` | Minecraft-serveren via `minecraftd` |
 | `vaert:Proxmox` | selve agenten — navnet fra `servere:` |
 
 🟢 kører · 🔴 nede · ⚪ **ukendt** — nøglen fandtes ikke i svaret, typisk fordi
@@ -141,6 +142,40 @@ To fælder er værd at kende:
   (`SYNOLOGY_SOVER` i unit-filen), melder `synologyd` `sover` og får en grå
   prik. Uden for vinduet er tavshed en rigtig fejl, og prikken bliver rød. En
   rød alarm syv timer hver nat ville bare lære en at ignorere røde prikker.
+
+### minecraftd — når `systemctl is-active` ikke er et ærligt svar
+
+`minecraft.service` starter java'en gennem `screen`, og screen afslutter altid
+med kode 0 — også når java'en er crashet. Systemd kan derfor ikke se forskel på
+crash og pænt stop, og unit'en kører med `Restart=always`. Prisen er, at
+`is-active` svarer **active** både midt i en crash-loop og mens java'en hænger
+uden at svare nogen. Netop de to tilfælde man vil opdage.
+
+`statusd/minecraftd.py` kører derfor **på minecraft-containeren** i stedet for
+den almindelige `statusd`, og spørger serveren som en klient ville: et **Server
+List Ping** på TCP 25565 — samme forespørgsel som serverlisten i spillet.
+Svarer den, kan spillerne komme ind. Svaret giver desuden spillertal og version,
+som vises i `Status`-blokken (🎮 2/20, med versionen som tooltip).
+
+| Vært | Unit i `deploy/` | Måler | Sti |
+|---|---|---|---|
+| minecraft 192.168.0.68 | `minecraftd.service` | grundtal + ping af spil-porten | `/opt/minecraftd.py` |
+
+Udrulning er en filkopi som på de andre repo-løse værter:
+
+```bash
+scp statusd/minecraftd.py root@192.168.0.68:/opt/minecraftd.py
+ssh root@192.168.0.68 systemctl restart minecraftd
+```
+
+Den svarer på port **9090** som en almindelig `statusd`, så `servere:` peger
+bare på `192.168.0.68:9090`. To ting værd at kende:
+
+- **Porten er spil-porten.** Simple Voice Chat's UDP 24454 siger intet om,
+  hvorvidt serveren tager imod spillere, og pinges ikke.
+- **Værts-prikken og spil-prikken er ikke det samme.** Værten er grøn, så snart
+  agenten svarer — den kører videre selv om java'en er væk. Det er `unit:minecraft`
+  der bliver rød, og serveren dukker op i `nede`-listen.
 
 ## Tidligere YunoHost-app
 
