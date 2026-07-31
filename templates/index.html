@@ -11,165 +11,178 @@
 </head>
 <body>
 
-  <!-- Venstre: Links -->
-  <aside class="kolonne links">
-    {% for gruppe in grupper %}
-    <h2{% if not loop.first %} class="senere"{% endif %}>{{ gruppe.titel }}</h2>
-    <ul>
-      {% for link in gruppe.links %}
-      <li>
-        <a href="{{ link.url }}" target="_blank" rel="noopener">
-          {#- tilstand er None for links vi ikke overvaager; de faar ingen prik,
-              saa oejet kun moeder en prik der hvor den betyder noget. -#}
-          {% if link.tilstand %}<span class="prik {{ link.tilstand }}"
-            title="{{ {'oppe': 'Kører', 'nede': 'Nede', 'ukendt': 'Ingen kontakt til agenten'}[link.tilstand] }}">●</span>{% endif %}
-          {{ link.titel }}
-        </a>
-      </li>
-      {% endfor %}
-    </ul>
-    {% endfor %}
-
-    {% if rss %}
-    <h2 class="senere">RSS</h2>
-    <ul class="rss-liste">
-      {% for feed in rss %}
-      <li class="rss-item">
-        <span class="rss-kilde">{{ feed.titel }}</span>
-        {% if feed.seneste_titel %}
-        <a href="{{ feed.seneste_url }}" target="_blank" rel="noopener" class="rss-titel">{{ feed.seneste_titel }}</a>
+  {# Baandet: dagen til venstre, vejret til hoejre. Alt herinde er noget man
+     laeser paa vej forbi — det man skal handle paa staar i kortene nedenfor. #}
+  <header class="top">
+    <div class="top-dag">
+      <div class="uge-blok">
+        <div class="uge-label">Uge</div>
+        <div class="uge-nummer">{{ ugenummer }}</div>
+      </div>
+      <div class="dag">
+        <div class="dag-dato">{{ dato_dansk }}</div>
+        {% if begivenheder %}
+        <div class="dag-aftaler">
+          {% for b in begivenheder %}
+          <div class="begivenhed">
+            <span class="prik" style="color: {{ b.kalender_farve }}">●</span>
+            <span class="tid">{% if b.hele_dagen %}&nbsp;{% else %}{{ b.start }}{% endif %}</span>
+            <span class="titel">{{ b.titel }}</span>
+          </div>
+          {% endfor %}
+        </div>
         {% else %}
-        <span class="rss-fejl">Kunne ikke hentes</span>
-        {% endif %}
-      </li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-  </aside>
-
-  <!-- Midt: Uge + Kalender -->
-  <main class="kolonne midt">
-    <div class="uge-blok">
-      <div class="uge-label">Uge</div>
-      <div class="uge-nummer">{{ ugenummer }}</div>
-      <div class="dato">{{ dato_dansk }}</div>
-    </div>
-
-    <div class="kalender">
-      <h2>I dag</h2>
-      {% if begivenheder %}
-        {% for b in begivenheder %}
-        <div class="begivenhed">
-          <span class="prik" style="color: {{ b.kalender_farve }}">●</span>
-          <span class="tid">
-            {%- if b.hele_dagen -%}
-              &nbsp;
-            {%- else -%}
-              {{ b.start }}
-            {%- endif -%}
-          </span>
-          <span class="titel">{{ b.titel }}</span>
-        </div>
-        {% endfor %}
-      {% else %}
         <p class="ingen-aftaler">Ingen aftaler i dag</p>
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
-  </main>
 
-  <!-- Højre: Vejr -->
-  <aside class="kolonne vejr">
-    <h2>Vejr</h2>
-    {% if vejr %}
-      <div class="vejr-by">{{ by }}</div>
-      <div class="vejr-hoved">{{ vejr.dagsoversigt.emoji }}</div>
-      <div class="vejr-beskrivelse">{{ vejr.dagsoversigt.beskrivelse }}</div>
-      <div class="vejr-detaljer">
-        <div class="linje">
-          <span class="label">Maks</span>
-          {{ vejr.dagsoversigt.max_temp }}°C
-        </div>
-        <div class="linje">
-          <span class="label">Min &nbsp;</span>
-          {{ vejr.dagsoversigt.min_temp }}°C
-        </div>
-        <div class="linje">
-          <span class="label">Nedbør</span>
-          {{ vejr.dagsoversigt.nedbor }} mm
+    <div class="top-vejr">
+      {% if vejr %}
+      <div class="vejr-linje">
+        <span class="vejr-hoved">{{ vejr.dagsoversigt.emoji }}</span>
+        <div class="vejr-tal">
+          <div class="vejr-sted">{{ by }} · {{ vejr.dagsoversigt.beskrivelse }}</div>
+          <div class="vejr-detalje">
+            {{ vejr.dagsoversigt.max_temp }}° / {{ vejr.dagsoversigt.min_temp }}° · {{ vejr.dagsoversigt.nedbor }} mm
+          </div>
         </div>
       </div>
 
       {% if vejr.timer %}
+      {# Timerne ligger vandret under dagsoversigten, saa baandet bliver ved med
+         at vaere et baand. Nedboer staar kun naar der er noget at sige. #}
       <div class="vejr-timer">
-        <div class="vejr-timer-header">Næste 6 timer</div>
         {% for t in vejr.timer %}
-        <div class="vejr-time-linje">
+        <div class="vejr-time">
           <span class="vejr-tid">{{ t.tid }}</span>
           <span class="vejr-emoji">{{ t.emoji }}</span>
           <span class="vejr-temp">{{ t.temp }}°</span>
-          <span class="vejr-nedbor">{{ t.nedbor_pct }}%</span>
+          <span class="vejr-nedbor">{% if t.nedbor_pct %}{{ t.nedbor_pct }}%{% endif %}</span>
         </div>
         {% endfor %}
       </div>
       {% endif %}
-    {% else %}
+      {% else %}
       <p class="vejr-fejl">Vejrdata ikke tilgængelig</p>
-    {% endif %}
-
-    {# "Status" og ikke "Drift": link-gruppen til venstre hedder Drift, og to
-       ens overskrifter paa samme skaerm laeses som det samme. #}
-    {% if drift.vaerter %}
-    <h2 class="senere">Status</h2>
-
-    {# Det vigtigste foerst: staar her ingenting, er alt som det skal vaere. #}
-    {% if drift.nede %}
-    <ul class="nede-liste">
-      {% for n in drift.nede %}
-      <li><span class="prik nede">●</span> {{ n.navn }} <span class="nede-vaert">{{ n.vaert }}</span></li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p class="alt-oppe"><span class="prik oppe">●</span> Alt kører</p>
-    {% endif %}
-
-    {% if drift.lxc %}
-    <div class="lxc-stribe">
-      {% for c in drift.lxc %}
-      <span class="lxc {% if c.oppe %}oppe{% else %}nede{% endif %}">{{ c.navn }}</span>
-      {% endfor %}
+      {% endif %}
     </div>
-    {% endif %}
+  </header>
 
-    <ul class="server-liste">
-      {% for s in drift.vaerter %}
-      <li class="server-item">
-        <span class="server-navn">
-          <span class="prik {% if s.sover %}ukendt{% elif s.online %}oppe{% else %}nede{% endif %}">●</span>
-          {{ s.navn }}
-        </span>
-        {% if s.sover %}
-        <span class="server-sover">sover efter skema</span>
-        {% elif s.online %}
-        <span class="server-stats">
-          <span title="Load">⚡ {{ s.load }}</span>
-          <span title="RAM">🧠 {{ s.mem_pct }}%</span>
-          {% if s.temp %}<span title="Temp">🌡 {{ s.temp }}°</span>{% endif %}
-          <span title="Uptime">⏱ {{ s.uptime_h }}t</span>
-          {# Kun minecraftd sender spillere. Vaerten er "oppe" saa snart agenten
-             svarer, saa selve spillet kan godt vaere nede her — derfor staar
-             prikken for det i nede-listen ovenfor, ikke i dette tal. #}
-          {% if s.spillere %}
-          <span title="Spillere online{% if s.version %} — {{ s.version }}{% endif %}">🎮 {{ s.spillere.online }}/{{ s.spillere.max }}</span>
+  <div class="kort-grid">
+
+    {# Venstre kort: driften. Bredere end links, fordi vaerts-tallene staar i
+       to spalter og skal kunne laeses uden at braekke. #}
+    <section class="kort drift">
+      <h2>Drift &amp; status</h2>
+
+      {# Det vigtigste foerst: staar her ingenting, er alt som det skal vaere. #}
+      {% if drift.nede %}
+      <ul class="nede-liste">
+        {% for n in drift.nede %}
+        <li><span class="prik nede">●</span> {{ n.navn }} <span class="nede-vaert">{{ n.vaert }}</span></li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="alt-oppe"><span class="prik oppe">●</span> Alt kører</p>
+      {% endif %}
+
+      {% if drift.lxc %}
+      <div class="lxc-stribe">
+        {% for c in drift.lxc %}
+        <span class="lxc {% if c.oppe %}oppe{% else %}nede{% endif %}">{{ c.navn }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if drift.vaerter %}
+      <div class="server-gitter">
+        {% for s in drift.vaerter %}
+        <div class="server-item">
+          {# Har vaerten et link i config.yaml, er navnet klikbart; ellers er
+             det bare tekst. Se links.vaert_urls. #}
+          {% set url = vaert_urls.get(s.navn) %}
+          {% set prik %}<span class="prik {% if s.sover %}ukendt{% elif s.online %}oppe{% else %}nede{% endif %}">●</span>{% endset %}
+          {% if url %}
+          <a class="server-navn" href="{{ url }}" target="_blank" rel="noopener">{{ prik }}{{ s.navn }}</a>
+          {% else %}
+          <span class="server-navn">{{ prik }}{{ s.navn }}</span>
           {% endif %}
-        </span>
-        {% else %}
-        <span class="server-offline">svarer ikke</span>
-        {% endif %}
-      </li>
+          {% if s.sover %}
+          <div class="server-sover">sover efter skema</div>
+          {% elif s.online %}
+          <div class="server-stats">
+            <span title="Load">⚡{{ s.load }}</span>
+            <span title="RAM">{{ s.mem_pct }}%</span>
+            {% if s.temp %}<span title="Temperatur">{{ s.temp }}°</span>{% endif %}
+            <span title="Oppetid">{{ s.uptime_h }}t</span>
+            {# Kun minecraftd sender spillere. Vaerten er "oppe" saa snart agenten
+               svarer, saa selve spillet kan godt vaere nede her — derfor staar
+               prikken for det i nede-listen ovenfor, ikke i dette tal. #}
+            {% if s.spillere %}
+            <span title="Spillere online{% if s.version %} — {{ s.version }}{% endif %}">🎮{{ s.spillere.online }}/{{ s.spillere.max }}</span>
+            {% endif %}
+          </div>
+          {% else %}
+          <div class="server-offline">svarer ikke</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {# Resten af drifts-gruppen: det der ikke er en vaert med egne tal, men
+         hoerer til driften alligevel. Udvalget sker i links.drift_links. #}
+      {% if drift_links %}
+      <div class="drift-links">
+        {% for link in drift_links %}
+        <a href="{{ link.url }}" target="_blank" rel="noopener">
+          {% if link.tilstand %}<span class="prik {{ link.tilstand }}"
+            title="{{ {'oppe': 'Kører', 'nede': 'Nede', 'ukendt': 'Ingen kontakt til agenten'}[link.tilstand] }}">●</span>{% endif %}
+          {{ link.titel }}
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </section>
+
+    {# Hoejre kort: alt man klikker paa. #}
+    <section class="kort links">
+      {% for gruppe in grupper if gruppe.plads != 'drift' %}
+      <h2{% if not loop.first %} class="senere"{% endif %}>{{ gruppe.titel }}</h2>
+      <ul>
+        {% for link in gruppe.links %}
+        <li>
+          <a href="{{ link.url }}" target="_blank" rel="noopener">
+            {#- tilstand er None for links vi ikke overvaager; de faar ingen prik,
+                saa oejet kun moeder en prik der hvor den betyder noget. -#}
+            {% if link.tilstand %}<span class="prik {{ link.tilstand }}"
+              title="{{ {'oppe': 'Kører', 'nede': 'Nede', 'ukendt': 'Ingen kontakt til agenten'}[link.tilstand] }}">●</span>{% endif %}
+            {{ link.titel }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
       {% endfor %}
-    </ul>
-    {% endif %}
-  </aside>
+
+      {% if rss %}
+      <h2 class="senere">RSS</h2>
+      <ul class="rss-liste">
+        {% for feed in rss %}
+        <li class="rss-item">
+          <span class="rss-kilde">{{ feed.titel }}</span>
+          {% if feed.seneste_titel %}
+          <a href="{{ feed.seneste_url }}" target="_blank" rel="noopener" class="rss-titel">{{ feed.seneste_titel }}</a>
+          {% else %}
+          <span class="rss-fejl">Kunne ikke hentes</span>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </section>
+
+  </div>
 
 </body>
 </html>

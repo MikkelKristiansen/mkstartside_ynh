@@ -35,6 +35,20 @@ grupper:
         url: https://app.example.com
         status: unit:min_app
 
+  # `plads: drift` flytter gruppen over i driftskortet til venstre. Links med
+  # `status: vaert:<navn>` bliver dér til værtens egen linje med load, RAM og
+  # oppetid — resten står som en fodnote nederst i kortet. Uden `plads:` ender
+  # gruppen i link-kortet til højre, som alle andre.
+  - titel: Drift
+    plads: drift
+    links:
+      - titel: Proxmox
+        url: https://proxmox.example.com/
+        status: vaert:Proxmox
+      - titel: Et drifts-værktøj
+        url: https://vaerktoej.example.com/
+        status: docker:vaerktoej
+
 # Tilføj RSS-feeds her (valgfrit):
 # rss:
 #   - titel: Min feed

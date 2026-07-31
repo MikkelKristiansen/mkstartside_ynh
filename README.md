@@ -42,6 +42,24 @@ Nøglen har formen `<slags>:<navn>` og slås op i det `statusd`-agenterne svarer
 | `unit:minecraft` | Minecraft-serveren via `minecraftd` |
 | `vaert:Proxmox` | selve agenten — navnet fra `servere:` |
 
+### Sidens to kort
+
+Siden er et bånd med dag og vejr, og derunder to kort: **drift** til venstre og
+**links** til højre. En gruppe havner i driftskortet ved at få `plads: drift`:
+
+```yaml
+  - titel: Drift
+    plads: drift
+    links: …
+```
+
+Inde i den gruppe deles linkene i to. Har et link `status: vaert:<navn>`, bliver
+det til værtens egen linje med load, RAM og oppetid — navnet er stadig klikbart.
+Resten står som en fodnote nederst i kortet. Det er derfor Proxmox og NAS'en ikke
+optræder to gange. Grupper uden `plads` ender i link-kortet, så en `config.yaml`
+uden nøglen giver stadig en hel side — koden og konfigurationen udrulles jo
+hver for sig.
+
 🟢 kører · 🔴 nede · ⚪ **ukendt** — nøglen fandtes ikke i svaret, typisk fordi
 agenten ikke svarede. At en agent tier er ikke det samme som at tjenesten er
 nede, og de to må ikke se ens ud. Links uden `status:` får ingen prik; det er

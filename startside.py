@@ -44,10 +44,14 @@ def index():
     config = load_config()
     today = date.today()
     drift = status.hent(config.get("servere", []))
+    grupper = link_grupper(config)
+    viste_grupper = links.til_visning(grupper, drift["opslag"])
 
     return render_template(
         "index.html",
-        grupper=links.til_visning(link_grupper(config), drift["opslag"]),
+        grupper=viste_grupper,
+        drift_links=links.drift_links(viste_grupper),
+        vaert_urls=links.vaert_urls(grupper),
         drift=drift,
         rss=rss.hent(config.get("rss", [])),
         by=config.get("by", ""),

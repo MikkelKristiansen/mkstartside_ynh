@@ -14,62 +14,151 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  height: 100%;
+  min-height: 100%;
   background: var(--bg);
   color: var(--fg);
   font-family: 'DM Sans', sans-serif;
   font-size: 15px;
 }
 
-body {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  gap: 0;
-  min-height: 100vh;
-}
+body { padding: 2.5rem 3rem; }
 
-.kolonne {
-  padding: 3rem 2rem;
-  border-right: 1px solid var(--border);
-}
-.kolonne:last-child { border-right: none; }
-
-/* --- Venstre: Links --- */
-.links h2 {
+/* Faelles etiket over hver blok: lille, spaerret og daempet, saa den ordner
+   siden uden selv at traekke blikket. */
+.kort h2,
+.uge-label,
+.vejr-timer-label {
   font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 1.5rem;
 }
 
-/* Gruppe nr. 2 og frem faar luft over sig. Overskriften er i sig selv
-   adskillelsen — ingen streger, saa listen ikke bliver et skema. */
-.links h2.senere { margin-top: 2rem; }
-
-.links ul {
-  list-style: none;
+/* --- Baandet oeverst: dagen til venstre, vejret til hoejre --- */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.6rem;
+  margin-bottom: 1.6rem;
 }
 
-.links li + li { margin-top: 0.15rem; }
-
-.links a {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.875rem;
-  color: var(--fg);
-  text-decoration: none;
+.top-dag {
   display: flex;
   align-items: baseline;
-  gap: 0.45rem;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  transition: background 0.12s;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
-.links a:hover {
-  background: var(--border);
+
+.uge-label { letter-spacing: 0.18em; font-size: 0.68rem; }
+
+.uge-nummer {
+  font-family: 'DM Mono', monospace;
+  font-size: 4.2rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
+
+.dag-dato {
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+
+.dag-aftaler { max-width: 34rem; }
+
+.begivenhed {
+  display: grid;
+  grid-template-columns: 1.1rem 3.2rem 1fr;
+  align-items: baseline;
+  gap: 0 0.5rem;
+  padding: 0.12rem 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+}
+
+.begivenhed .prik { font-size: 0.6rem; }
+.begivenhed .tid { color: var(--muted); font-size: 0.78rem; white-space: nowrap; }
+
+.ingen-aftaler,
+.vejr-fejl {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.top-vejr { text-align: right; }
+
+.vejr-linje {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.vejr-hoved { font-size: 1.8rem; line-height: 1; }
+
+.vejr-tal {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+.vejr-sted { color: var(--fg); font-size: 0.9rem; }
+
+/* Timerne vandret, saa baandet bliver ved med at vaere et baand. */
+.vejr-timer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.9rem;
+  margin-top: 0.7rem;
+}
+
+.vejr-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  /* Fast bredde, saa kolonnerne staar lige uanset om nedboeren er 5% eller
+     100% — ellers vandrer timerne sidelaens hen over dagen. */
+  min-width: 2.4rem;
+}
+
+.vejr-tid { color: var(--muted); }
+.vejr-emoji { font-size: 0.95rem; line-height: 1.2; }
+.vejr-temp { color: var(--fg); font-size: 0.75rem; }
+.vejr-nedbor { color: var(--muted); font-size: 0.65rem; min-height: 0.8rem; }
+
+/* --- De to kort --- */
+/* Kortene faar samme hoejde (grid'ets stretch), saa underkanterne flugter
+   ogsaa naar link-spalten er den laengste. */
+.kort-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.4rem;
+}
+
+.kort {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.6rem;
+}
+
+.kort h2 { margin-bottom: 1rem; }
+/* Gruppe nr. 2 og frem faar luft over sig. Overskriften er i sig selv
+   adskillelsen — ingen streger, saa listen ikke bliver et skema. */
+.kort h2.senere { margin-top: 1.6rem; }
 
 /* Status-prikken. Bredden er fast, saa titlerne staar paa linje ogsaa naar
    nogle links ikke har en prik. */
@@ -82,12 +171,144 @@ body {
 .prik.nede   { color: var(--nede); }
 .prik.ukendt { color: var(--ukendt); }
 
-/* Links uden prik ville ellers rykke ind til venstre. */
-.links a:not(:has(.prik)) { padding-left: 1.6rem; }
+/* --- Driftskortet --- */
 
-.rss-liste {
-  list-style: none;
+/* Normaltilstanden fylder én linje. Det er meningen: er der ingenting at
+   sige, skal driften heller ikke fylde noget. */
+.alt-oppe {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
 }
+
+.nede-liste { list-style: none; }
+.nede-liste li {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--nede);
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0.12rem 0;
+}
+.nede-vaert { color: var(--muted); font-size: 0.7rem; margin-left: auto; }
+
+/* LXC'erne som smaa maerkater — fem containere paa to linjer siger mere
+   paa mindre plads end fem listepunkter. */
+.lxc-stribe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.9rem 0 1.2rem;
+}
+.lxc {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.66rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.lxc.oppe { border-color: var(--oppe); color: var(--oppe); }
+/* En stoppet container fyldes helt ud — den skal kunne ses uden at man leder. */
+.lxc.nede { border-color: var(--nede); background: var(--nede); color: #fff; }
+
+/* To spalter: seks vaerter fylder tre raekker i stedet for seks, og kortet
+   bliver lige saa hoejt som link-spalten ved siden af. */
+.server-gitter {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 1.2rem;
+}
+
+.server-item {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.84rem;
+}
+/* Nederste raekke staar uden streg — med to spalter er det de to sidste. */
+.server-item:nth-last-child(-n+2):nth-child(odd),
+.server-item:nth-last-child(-n+2):nth-child(odd) + .server-item {
+  border-bottom: none;
+}
+
+.server-navn {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  color: var(--fg);
+  text-decoration: none;
+}
+a.server-navn:hover { color: var(--accent); }
+
+.server-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  padding-left: 0.95rem;
+}
+
+.server-offline {
+  font-size: 0.7rem;
+  color: var(--nede);
+  padding-left: 0.95rem;
+}
+
+.server-sover {
+  font-size: 0.7rem;
+  color: var(--muted);
+  padding-left: 0.95rem;
+}
+
+/* Driftens oevrige links som en fodnote — de hoerer til, men har ingen tal. */
+.drift-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+
+.drift-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+.drift-links a:hover { color: var(--accent); }
+
+/* --- Link-kortet --- */
+.links ul { list-style: none; }
+.links li + li { margin-top: 0.1rem; }
+
+.links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.84rem;
+  color: var(--fg);
+  text-decoration: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0.22rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.12s;
+}
+.links a:hover { background: var(--border); }
+
+/* Links uden prik ville ellers rykke ind til venstre. */
+.links a:not(:has(.prik)) { padding-left: 1.5rem; }
+
+.rss-liste { list-style: none; }
 
 .rss-item {
   padding: 0.4rem 0;
@@ -122,285 +343,28 @@ body {
   font-style: italic;
 }
 
-/* --- Midt: Uge + Kalender --- */
-.midt {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.uge-blok {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.uge-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.3rem;
-}
-
-.uge-nummer {
-  font-family: 'DM Mono', monospace;
-  font-size: 7rem;
-  font-weight: 300;
-  line-height: 1;
-  color: var(--fg);
-  letter-spacing: -0.03em;
-}
-
-.dato {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 300;
-  color: var(--muted);
-  margin-top: 0.5rem;
-}
-
-.kalender {
-  width: 100%;
-  max-width: 420px;
-}
-
-.kalender h2 {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 1rem;
-}
-
-.begivenhed {
-  display: grid;
-  grid-template-columns: 1.2rem 3.5rem 1fr;
-  align-items: baseline;
-  gap: 0 0.5rem;
-  padding: 0.3rem 0;
-  border-bottom: 1px solid var(--border);
-  font-family: 'DM Mono', monospace;
-  font-size: 0.85rem;
-}
-.begivenhed:last-child { border-bottom: none; }
-
-.begivenhed .prik {
-  font-size: 0.65rem;
-  line-height: 1.6;
-}
-
-.begivenhed .tid {
-  color: var(--muted);
-  font-size: 0.8rem;
-  white-space: nowrap;
-}
-
-.begivenhed .titel {
-  color: var(--fg);
-}
-
-.ingen-aftaler {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.85rem;
-  color: var(--muted);
-  font-style: italic;
-}
-
-/* --- Højre: Vejr --- */
-.vejr h2 {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 1.5rem;
-}
-
-.vejr-by {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.9rem;
-  color: var(--muted);
-  margin-bottom: 1.2rem;
-}
-
-.vejr-hoved {
-  font-size: 2.5rem;
-  line-height: 1;
-  margin-bottom: 0.5rem;
-}
-
-.vejr-beskrivelse {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  margin-bottom: 1.5rem;
-}
-
-.vejr-detaljer {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.85rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.vejr-detaljer .linje {
-  color: var(--fg);
-}
-
-.vejr-detaljer .label {
-  color: var(--muted);
-  font-size: 0.75rem;
-}
-
-.vejr-fejl {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.85rem;
-  color: var(--muted);
-  font-style: italic;
-}
-
-.vejr-timer {
-  margin-top: 1.5rem;
-}
-
-.vejr-timer-header {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.6rem;
-}
-
-.vejr-time-linje {
-  display: grid;
-  grid-template-columns: 3rem 1.4rem 2.8rem 2rem;
-  gap: 0 0.4rem;
-  align-items: baseline;
-  padding: 0.2rem 0;
-  border-bottom: 1px solid var(--border);
-  font-family: 'DM Mono', monospace;
-  font-size: 0.82rem;
-}
-.vejr-time-linje:last-child { border-bottom: none; }
-
-.vejr-tid   { color: var(--muted); }
-.vejr-emoji { font-size: 0.85rem; }
-.vejr-temp  { color: var(--fg); }
-.vejr-nedbor { color: var(--muted); font-size: 0.75rem; }
-
-/* --- Drift --- */
-.vejr h2.senere { margin-top: 2rem; }
-
-/* Normaltilstanden fylder én linje. Det er meningen: er der ingenting at
-   sige, skal driften heller ikke fylde noget. */
-.alt-oppe {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.8rem;
-  color: var(--muted);
-  display: flex;
-  align-items: baseline;
-  gap: 0.45rem;
-}
-
-.nede-liste { list-style: none; }
-.nede-liste li {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.8rem;
-  color: var(--nede);
-  display: flex;
-  align-items: baseline;
-  gap: 0.45rem;
-  padding: 0.12rem 0;
-}
-.nede-vaert { color: var(--muted); font-size: 0.7rem; margin-left: auto; }
-
-/* LXC'erne som smaa maerkater — fem containere paa to linjer siger mere
-   paa mindre plads end fem listepunkter. */
-.lxc-stribe {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin: 0.8rem 0;
-}
-.lxc {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.68rem;
-  padding: 0.15rem 0.4rem;
-  border-radius: 3px;
-  border: 1px solid var(--border);
-  color: var(--muted);
-}
-.lxc.oppe { border-color: var(--oppe); color: var(--oppe); }
-/* En stoppet container fyldes helt ud — den skal kunne ses uden at man leder. */
-.lxc.nede { border-color: var(--nede); background: var(--nede); color: #fff; }
-
-.server-liste { list-style: none; }
-
-.server-item {
-  padding: 0.4rem 0;
-  border-bottom: 1px solid var(--border);
-  font-family: 'DM Mono', monospace;
-  font-size: 0.82rem;
-}
-.server-item:last-child { border-bottom: none; }
-
-.server-navn {
-  display: flex;
-  align-items: baseline;
-  gap: 0.45rem;
-  margin-bottom: 0.15rem;
-}
-
-.server-stats {
-  display: flex;
-  gap: 0.7rem;
-  color: var(--muted);
-  font-size: 0.75rem;
-  padding-left: 1rem;
-}
-
-.server-offline {
-  font-size: 0.75rem;
-  color: var(--nede);
-  padding-left: 1rem;
-}
-
-.server-sover {
-  font-size: 0.75rem;
-  color: var(--muted);
-  padding-left: 1rem;
+/* --- Smallere skaerme --- */
+@media (max-width: 1000px) {
+  .kort-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-  body {
-    grid-template-columns: 1fr;
+  body { padding: 1.5rem 1.2rem; }
+
+  .top { align-items: flex-start; }
+  .top-vejr { text-align: left; }
+  .vejr-linje { justify-content: flex-start; }
+  .vejr-tal { text-align: left; }
+
+  /* Timerne maa gerne kunne rulles vandret frem for at braekke i to raekker. */
+  .vejr-timer {
+    justify-content: flex-start;
+    overflow-x: auto;
+    gap: 0.7rem;
   }
 
-  .kolonne {
-    padding: 2rem 1.2rem;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
-  .kolonne:last-child { border-bottom: none; }
-
-  .uge-nummer {
-    font-size: 5rem;
-  }
-
-  .midt {
-    align-items: flex-start;
-    order: -1;
-  }
-
-  .kalender {
-    max-width: 100%;
-  }
+  .uge-nummer { font-size: 3.4rem; }
+  .server-gitter { grid-template-columns: 1fr; }
+  .server-item { border-bottom: 1px solid var(--border); }
+  .server-item:last-child { border-bottom: none; }
 }
