@@ -11,7 +11,7 @@ from flask import Flask, render_template
 
 import links
 from dato import dansk_dato
-from kilder import kalender, rss, status, vejr
+from kilder import backup, kalender, rss, status, vejr
 
 CONFIG_PATH = os.environ.get(
     "MKSTARTSIDE_CONFIG",
@@ -53,6 +53,7 @@ def index():
         drift_links=links.drift_links(viste_grupper),
         vaert_urls=links.vaert_urls(grupper),
         drift=drift,
+        backup=backup.hent(config.get("backup")),
         rss=rss.hent(config.get("rss", [])),
         by=config.get("by", ""),
         ugenummer=today.isocalendar()[1],

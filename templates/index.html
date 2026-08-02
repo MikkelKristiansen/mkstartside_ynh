@@ -131,6 +131,24 @@
       </div>
       {% endif %}
 
+      {# Backup-alder. Ikke en prik der siger oppe/nede, men en taerskel: hver
+         disk har sin egen kadence, og farven kommer af hvor laenge siden det er.
+         Tallene skubbes hertil af x1 — se kilder/backup.py om hvorfor. #}
+      {% if backup %}
+      <div class="backup">
+        <div class="backup-label">Backup</div>
+        {% for b in backup %}
+        <div class="backup-linje">
+          <span class="prik {{ b.tilstand }}"
+            title="{{ {'frisk': 'Kørt for nylig', 'gammel': 'Begynder at blive gammel', 'foraeldet': 'For længe siden', 'fejl': 'Sidste kørsel gik ikke rent', 'ukendt': 'Ingen melding fra x1'}[b.tilstand] }}">●</span>
+          <span class="backup-navn">{{ b.titel }}{% if b.kadence %} <span class="backup-kadence">{{ b.kadence }}</span>{% endif %}</span>
+          <span class="backup-alder"
+            {% if b.tidspunkt %}title="{{ b.tidspunkt }}"{% endif %}>{{ b.tekst }}{% if b.resultat %} · {{ b.resultat }}{% endif %}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
       {# Resten af drifts-gruppen: det der ikke er en vaert med egne tal, men
          hoerer til driften alligevel. Udvalget sker i links.drift_links. #}
       {% if drift_links %}

@@ -65,6 +65,26 @@ agenten ikke svarede. At en agent tier er ikke det samme som at tjenesten er
 nede, og de to må ikke se ens ud. Links uden `status:` får ingen prik; det er
 det rigtige for alt vi ikke selv driver.
 
+### Backup-alder — den ene ting siden ikke selv henter
+
+Nederst i driftskortet står en linje pr. backup-disk med hvor længe siden den
+sidst kørte igennem. Den vises kun, hvis `config.yaml` har en `backup:`-blok —
+se `config.example.yaml` for felterne.
+
+Alt andet på siden **hentes**; det her **modtages**. Grunden er, at afsenderen er
+en bærbar (x1). Spurgte siden efter status, ville svaret blive ⚪ ukendt, hver
+gang maskinen var slukket — og advarslen ville altså forsvinde præcis når man har
+været væk længe og derfor ikke har fået taget backup. I stedet skubber x1 et
+tidsstempel herop efter hver kørsel, og bliver det ikke opdateret, vokser alderen
+på siden af sig selv. Afsenderen er `~/bin/backup/publicer-backup-status.sh`;
+modtageren er `/usr/local/sbin/modtag-backup-status` på apps-mk, låst til en
+`command=`-begrænset ssh-nøgle, og filen lander i `state/backup-status.json`.
+
+Farverne er tærskler, ikke oppe/nede, og tærsklen sættes pr. disk, fordi
+kadencerne er forskellige: 🟢 frisk · 🟡 ved at blive gammel · 🔴 for længe siden
+eller sidste kørsel gik ikke rent · ⚪ ingen melding. Gul findes **kun** her —
+tjeneste-prikkerne har ingen ægte mellemtilstand.
+
 ## Opdatering
 
 ```bash

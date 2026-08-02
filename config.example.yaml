@@ -49,6 +49,26 @@ grupper:
         url: https://vaerktoej.example.com/
         status: docker:vaerktoej
 
+# Hvor længe siden hver backup-disk sidst kørte (valgfrit).
+# Filen SKRIVES af den maskine der tager backup — den spørges ikke. En bærbar
+# der er slukket ville ellers give "ukendt" netop når man har været væk længe og
+# derfor ikke har fået taget backup; her står tidsstemplet i stedet stille, og
+# alderen vokser af sig selv. Se kilder/backup.py.
+#
+# Tærsklerne er pr. disk, fordi kadencerne er det: en disk i dock skal køre
+# dagligt, en disk i et pengeskab ugentligt, et koldt lager sjældnere.
+#   gul_dage   herover bliver prikken gul  ("ved at blive gammel")
+#   roed_dage  herover bliver den rød      ("for længe siden")
+# En kørsel der ikke endte i `ok` bliver rød uanset alder.
+# backup:
+#   fil: /srv/apps/mkstartside/state/backup-status.json
+#   diske:
+#     - navn: SeaExt          # skal matche labelen i afsenderens diske.conf
+#       titel: SeaExt         # valgfri, ellers bruges navn
+#       kadence: dagligt      # kun tekst, står dæmpet efter navnet
+#       gul_dage: 2
+#       roed_dage: 4
+
 # Tilføj RSS-feeds her (valgfrit):
 # rss:
 #   - titel: Min feed

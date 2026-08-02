@@ -9,6 +9,10 @@
   --oppe: #5a9e5a;
   --nede: #c0392b;
   --ukendt: #b8b2a6;
+  /* Gul findes KUN for backup-alderen, og modsiger ikke noten ovenfor: her er
+     der en aegte mellemtilstand ("ved at blive gammel"), som tjeneste-prikkerne
+     ikke har. Graa betyder stadig "vi ved det ikke". */
+  --advarsel: #c8912b;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -171,6 +175,13 @@ body { padding: 2.5rem 3rem; }
 .prik.nede   { color: var(--nede); }
 .prik.ukendt { color: var(--ukendt); }
 
+/* Backup-alderens fire tilstande genbruger prikken, men ikke dens ordforraad:
+   "frisk" er ikke det samme som "oppe". Se kilder/backup.py. */
+.prik.frisk     { color: var(--oppe); }
+.prik.gammel    { color: var(--advarsel); }
+.prik.foraeldet { color: var(--nede); }
+.prik.fejl      { color: var(--nede); }
+
 /* --- Driftskortet --- */
 
 /* Normaltilstanden fylder én linje. Det er meningen: er der ingenting at
@@ -264,6 +275,46 @@ a.server-navn:hover { color: var(--accent); }
   font-size: 0.7rem;
   color: var(--muted);
   padding-left: 0.95rem;
+}
+
+/* --- Backup-alderen --- */
+.backup {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+
+.backup-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+/* Navnet til venstre, alderen til hoejre — saa de tre tal staar under hinanden
+   og kan sammenlignes med ét blik. Det er hele pointen med at vise alle tre. */
+.backup-linje {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  padding: 0.12rem 0;
+}
+
+.backup-navn { font-family: 'DM Mono', monospace; }
+
+.backup-kadence {
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.backup-alder {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-align: right;
 }
 
 /* Driftens oevrige links som en fodnote — de hoerer til, men har ingen tal. */
