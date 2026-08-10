@@ -103,14 +103,27 @@ def lxc():
 
 def docker():
     """Alle containere, også stoppede — en container der er forsvundet fra
-    listen ville ellers se ud som om alt var i orden."""
-    linjer = _koer(["docker", "ps", "-a", "--format", "{{.Names}}\t{{.State}}"])
+    listen ville ellers se ud som om alt var i orden.
+
+    `image` kommer med, fordi det er den eneste kilde til hvilken VERSION der
+    faktisk kører. Startsiden bruger det til at opdage nye udgaver (se
+    kilder/versioner.py). Det er med vilje agenten der svarer på det, og ikke
+    en ssh fra startsiden: agenten står her i forvejen og taler allerede med
+    docker, mens en ssh-vej ville koste endnu en nøgle at holde styr på.
+    """
+    linjer = _koer(["docker", "ps", "-a", "--format", "{{.Names}}\t{{.State}}\t{{.Image}}"])
     resultat = []
     for linje in linjer.splitlines():
-        if "\t" not in linje:
+        felter = linje.split("\t")
+        if len(felter) < 2:
             continue
-        navn, tilstand = linje.split("\t", 1)
-        resultat.append({"navn": navn, "oppe": tilstand.strip() == "running"})
+        navn, tilstand = felter[0], felter[1]
+        image = felter[2] if len(felter) > 2 else ""
+        resultat.append({
+            "navn": navn,
+            "oppe": tilstand.strip() == "running",
+            "image": image.strip(),
+        })
     return sorted(resultat, key=lambda c: c["navn"])
 
 

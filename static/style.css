@@ -182,6 +182,14 @@ body { padding: 2.5rem 3rem; }
 .prik.foraeldet { color: var(--nede); }
 .prik.fejl      { color: var(--nede); }
 
+/* Versionerne har deres eget ordforraad af samme grund: "nyeste" er ikke
+   "oppe", og en app der er bagud er ikke NEDE — den koerer fint, den er bare
+   ikke den nyeste. Rødt er derfor forbeholdt major-spring, hvor man skal laese
+   noter og tage backup foerst. Se kilder/versioner.py. */
+.prik.nyeste { color: var(--oppe); }
+.prik.nyt    { color: var(--advarsel); }
+.prik.major  { color: var(--nede); }
+
 /* --- Driftskortet --- */
 
 /* Normaltilstanden fylder én linje. Det er meningen: er der ingenting at
@@ -315,6 +323,72 @@ a.server-navn:hover { color: var(--accent); }
   color: var(--muted);
   font-size: 0.72rem;
   text-align: right;
+}
+
+/* --- Nye udgaver --- */
+/* Samme form som backup-blokken ovenfor: etiket, saa en linje pr. ting, tallet
+   til hoejre. To blokke der siger "her er noget du skal handle paa" boer ligne
+   hinanden — oejet skal ikke laere to moenstre. */
+.versioner {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+
+.versioner-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.version-linje {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  padding: 0.12rem 0;
+}
+
+.version-navn {
+  font-family: 'DM Mono', monospace;
+  color: var(--fg);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+}
+.version-navn:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Major staar som et maerkat og ikke bare i en anden farve: farven alene
+   forsvinder for den farveblinde, og det er praecis den ene forskel man ikke
+   maa overse her. */
+.version-major {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--nede);
+  border: 1px solid var(--nede);
+  border-radius: 3px;
+  padding: 0 0.25rem;
+}
+
+.version-spring {
+  margin-left: auto;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+.version-intet { color: var(--muted); font-family: 'DM Mono', monospace; }
+
+.version-ukendte {
+  font-size: 0.68rem;
+  color: var(--muted);
+  padding-left: 0.95rem;
+  margin-top: 0.25rem;
 }
 
 /* Driftens oevrige links som en fodnote — de hoerer til, men har ingen tal. */

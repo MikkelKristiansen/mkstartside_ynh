@@ -69,6 +69,31 @@ grupper:
 #       gul_dage: 2
 #       roed_dage: 4
 
+# Nye udgaver af docker-apps'ene (valgfrit).
+# Den kørende version kommer fra statusd-agenten på docker-værten, så en app
+# skal være en container på en vært med STATUSD_DOCKER=1 for at kunne tjekkes.
+# Nyeste udgave slås op på GitHub — derfor `repo:`.
+#
+# Kun applikationerne hører her. Databaserne (postgres:15-alpine,
+# redis:7-alpine) er serie-tags: de genbygges løbende med sikkerhedsrettelser
+# inden for serien og opdateres af et almindeligt `docker compose pull`, uden at
+# hoppe major. Der er ingen "ny release" at opdage — kun et nyere build.
+#
+# calibre-web sammenlignes mod UPSTREAM (janeczku). Kører du LinuxServers image,
+# er `-lsNNN` deres eget build-nummer, og der ses bort fra det. "Nyeste" betyder
+# altså at upstream-versionen matcher — ikke at der ikke findes en nyere -lsNNN
+# med patchede systempakker. Den fanges kun af `docker compose pull`.
+#
+# Listen bør holdes op mod `docker ps` på værten, hver gang der kommer en ny
+# app: en container der ikke står her, bliver aldrig tjekket og larmer aldrig.
+# versioner:
+#   apps:
+#     - container: paperless          # navnet i `docker ps`
+#       repo: paperless-ngx/paperless-ngx
+#       titel: Paperless              # valgfri, ellers bruges container
+#     - container: miniflux
+#       repo: miniflux/v2
+
 # Tilføj RSS-feeds her (valgfrit):
 # rss:
 #   - titel: Min feed

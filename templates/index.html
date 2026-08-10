@@ -149,6 +149,42 @@
       </div>
       {% endif %}
 
+      {# Nye udgaver af docker-apps'ene. Images er pinnet, saa en ny version
+         opdages ikke af sig selv — se kilder/versioner.py. Navnet linker til
+         release-noterne, for det er alligevel det foerste man skal laese. #}
+      {% if versioner %}
+      <div class="versioner">
+        <div class="versioner-label">Opdateringer</div>
+
+        {% if versioner.bagud %}
+        {% for a in versioner.bagud %}
+        <div class="version-linje">
+          <span class="prik {{ a.tilstand }}"
+            title="{{ 'Stort spring — laes opgraderingsnoterne og tag backup foerst' if a.tilstand == 'major' else 'Mindre opdatering' }}">●</span>
+          <a class="version-navn" href="{{ a.url }}" target="_blank" rel="noopener">{{ a.titel }}</a>
+          {% if a.slags == 'MAJOR' %}<span class="version-major">major</span>{% endif %}
+          <span class="version-spring">{{ a.koerende }} → {{ a.nyeste }}</span>
+        </div>
+        {% endfor %}
+        {% else %}
+        {# Er alt nyeste, fylder blokken én linje — som "Alt koerer" ovenfor. #}
+        <div class="version-linje">
+          <span class="prik nyeste">●</span>
+          <span class="version-intet">Alle apps er på nyeste</span>
+        </div>
+        {% endif %}
+
+        {# En app der ikke KUNNE tjekkes maa ikke gemme sig i tavsheden: et tjek
+           der ikke naaede igennem er ikke et tjek der fandt ro. #}
+        {% if versioner.ukendte %}
+        <div class="version-ukendte">
+          {% for a in versioner.ukendte %}<span title="{{ a.note }}">{{ a.titel }}</span>{% if not loop.last %} · {% endif %}{% endfor %}
+          — ikke tjekket
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
       {# Resten af drifts-gruppen: det der ikke er en vaert med egne tal, men
          hoerer til driften alligevel. Udvalget sker i links.drift_links. #}
       {% if drift_links %}

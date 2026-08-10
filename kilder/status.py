@@ -27,7 +27,7 @@ def _hent_vaert(server):
 
 
 def hent(servere):
-    """Alt agenterne kan fortælle, i fire dele:
+    """Alt agenterne kan fortælle, i fem dele:
 
     vaerter  load/RAM/temperatur/oppetid pr. vært
     opslag   {"docker:vikunja": True, ...}. En nøgle der IKKE findes betyder
@@ -35,14 +35,15 @@ def hent(servere):
              Derfor er ukendt og nede to forskellige ting i visningen.
     lxc      containerne på Proxmox-værten, til driftsbjælken
     nede     alt der er nede, uanset hvor, til advarslen i driftsbjælken
+    images   {"vikunja": "vikunja/vikunja:2.4.0", ...} til versionstjekket
     """
     if not servere:
-        return {"vaerter": [], "opslag": {}, "lxc": [], "nede": []}
+        return {"vaerter": [], "opslag": {}, "lxc": [], "nede": [], "images": {}}
 
     with ThreadPoolExecutor(max_workers=len(servere)) as pool:
         vaerter = list(pool.map(_hent_vaert, servere))
 
-    opslag, lxc, nede = {}, [], []
+    opslag, lxc, nede, images = {}, [], [], {}
     for vaert in vaerter:
         # En vaert der er slukket efter skema er hverken oppe eller nede. Ved
         # slet ikke at saette noeglen faar den den graa "ukendt"-prik, og den
@@ -58,6 +59,14 @@ def hent(servere):
                 opslag[f"{forstavelse}:{post['navn']}"] = post["oppe"]
                 if not post["oppe"]:
                     nede.append({"vaert": vaert["navn"], "navn": post["navn"]})
+                # `image` er kun med hvis agenten er ny nok til at sende det.
+                # En gammel agent giver altså ingen versionslinjer frem for
+                # forkerte — samme fald-tilbage som resten af siden.
+                if felt == "docker" and post.get("image"):
+                    images[post["navn"]] = post["image"]
         lxc.extend(vaert.get("lxc", []))
 
-    return {"vaerter": vaerter, "opslag": opslag, "lxc": lxc, "nede": nede}
+    return {
+        "vaerter": vaerter, "opslag": opslag, "lxc": lxc,
+        "nede": nede, "images": images,
+    }
