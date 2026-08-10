@@ -85,6 +85,42 @@ kadencerne er forskellige: 🟢 frisk · 🟡 ved at blive gammel · 🔴 for l�
 eller sidste kørsel gik ikke rent · ⚪ ingen melding. Gul findes **kun** her —
 tjeneste-prikkerne har ingen ægte mellemtilstand.
 
+### Nye udgaver af docker-apps'ene
+
+Under backup-linjerne står de apps, der er bagud, med et link til
+release-noterne. Blokken vises kun, hvis `config.yaml` har en `versioner:`-blok.
+
+Images på apps-docker er pinnet til konkrete versionsnumre (`miniflux:2.3.3`,
+ikke `:latest`), så en genstart aldrig i sig selv kan trække en ny major-version
+ind og brække en database. Prisen er, at en ny udgave ikke opdages af sig selv:
+`docker compose pull` på et pinnet tag henter ingenting.
+
+Den kørende version kommer fra `statusd`-agentens `image`-felt — samme kilde som
+prikkerne. En ssh herfra til docker-værten ville koste endnu en nøgle at holde
+styr på, og agenten taler allerede med docker. Nyeste udgave slås op på GitHub og
+caches seks timer; opslaget er anonymt, og loftet på 60 i timen er langt væk.
+
+🟢 alle er nyeste · 🟡 minor eller patch · 🔴 **major** — læs opgraderingsnoterne
+og tag backup først. Major står desuden som et lille mærkat, fordi farven alene
+forsvinder for den farveblinde, og det er netop den ene forskel man ikke må
+overse. Apps, der ikke kunne tjekkes, står som fodnote frem for at forsvinde: et
+tjek der ikke nåede igennem er ikke et tjek der fandt ro.
+
+Normaliseringen skelner mellem **bygge-suffikser** (`-alpine`, `-ls392`), der
+skal væk før to versioner kan sammenlignes, og **forudgivelser** (`-rc1`), der er
+en del af versionen. Uden det ville hedgedoc og calibre-web altid se bagud ud —
+og en advarsel der altid lyser er den samme som ingen advarsel.
+
+`GET /versioner.json` giver det samme som JSON. Det findes for x1's ugentlige
+påmindelse (`~/bin/docker-versioner/`), som før lavede hele tjekket selv ud fra
+sin egen liste — indtil de to lister drev fra hinanden, og tre containere aldrig
+blev tjekket. Nu er der én liste, her i `config.yaml`, og laptoppen henter bare
+svaret. Push og pull kan sagtens leve sammen; to konfigurationer kan ikke.
+
+**Listen skal holdes op mod `docker ps` på .71, hver gang der kommer en ny app** —
+en container der ikke står i `versioner:`, bliver aldrig tjekket og larmer aldrig.
+Det er samme slags kontrol som at holde `grupper:` op mod edges Caddyfile.
+
 ## Opdatering
 
 ```bash
@@ -113,7 +149,7 @@ styres af miljøvariabler i unit-filen, ikke af koden:
 | Vært | Unit i `deploy/` | Måler også | Sti |
 |---|---|---|---|
 | Proxmox 192.168.0.67 | `statusd-proxmox.service` | alle LXC'er | `/opt/statusd.py` |
-| apps-docker 192.168.0.71 | `statusd-apps-docker.service` | alle docker-containere | `/opt/statusd.py` |
+| apps-docker 192.168.0.71 | `statusd-apps-docker.service` | alle docker-containere + `image` | `/opt/statusd.py` |
 | apps-mk 192.168.0.73 | `statusd-apps-mk.service` | systemd-tjenester | fra repoet |
 | pihole2 192.168.0.124 | — | kun grundtal | `/opt/statusd.py` |
 
