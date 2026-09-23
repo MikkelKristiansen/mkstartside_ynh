@@ -141,7 +141,12 @@ def _tjek_app(app, images):
                 "note": url_eller_fejl, "koerende": tag}
 
     n_koer, n_ny = _normaliser(tag), _normaliser(nyeste)
-    if n_koer == n_ny:
+    # Nogle projekter flytter et kortere tag med, når der kommer en hotfix:
+    # Kavita udgav v0.9.1.4 uden noget 0.9.1.4-tag og flyttede i stedet 0.9.1.
+    # Så er det kørende tag et forkortet navn for netop den nyeste udgave, og
+    # et `docker compose pull` henter den — samme tankegang som ved `latest`.
+    # Punktummet i sammenligningen sikrer, at 0.9.1 ikke matcher 0.9.10.
+    if n_koer == n_ny or n_ny.startswith(n_koer + "."):
         return {"titel": titel, "tilstand": "nyeste", "url": url_eller_fejl,
                 "koerende": tag, "nyeste": nyeste}
 
