@@ -11,6 +11,7 @@ Kører på **https://start.mkuv.dk** — kun tilgængelig på LAN og over VPN.
 | Kode (dette repo) | `/srv/apps/mkstartside` på `apps-mk` (192.168.0.73, LXC 112) |
 | Konfiguration | `/srv/apps/mkstartside/config.yaml` — **ikke i git** |
 | Unit | `/etc/systemd/system/mkstartside.service` — kopi i `deploy/` |
+| Cache-varmer | `mkstartside-varm.timer` + `.service` — henter siden lokalt hvert 4. min, så kalenderen aldrig er kold |
 
 `config.yaml` er den levende konfiguration og redigeres direkte på serveren.
 Den er derfor i `.gitignore`; repoet har kun `config.example.yaml` som skabelon.

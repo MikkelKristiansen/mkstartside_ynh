@@ -1,0 +1,11 @@
+[Unit]
+Description=Hold mkstartsides cache varm hvert 4. minut
+
+[Timer]
+# Under kalenderens TTL på 5 minutter (kilder/kalender.py).
+OnBootSec=1min
+OnUnitActiveSec=4min
+AccuracySec=10s
+
+[Install]
+WantedBy=timers.target

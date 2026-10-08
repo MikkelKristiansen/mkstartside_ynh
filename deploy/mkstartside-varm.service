@@ -1,0 +1,13 @@
+[Unit]
+Description=Hold mkstartsides cache varm
+# Kilderne hentes først, når nogen åbner siden, og kalenderen gemmes kun i 5
+# minutter. Uden dette ventede den første visning efter en pause 3-4 sekunder
+# (op til 10, når Google er langsom) på kalendere og status. Et lokalt kald
+# hvert 4. minut betyder, at den ventetid aldrig rammer et menneske.
+After=mkstartside.service
+Requires=mkstartside.service
+
+[Service]
+Type=oneshot
+DynamicUser=yes
+ExecStart=/usr/bin/curl -sS -o /dev/null --max-time 30 http://127.0.0.1:8765/

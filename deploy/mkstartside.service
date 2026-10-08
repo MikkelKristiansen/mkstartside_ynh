@@ -9,7 +9,10 @@ WorkingDirectory=/srv/apps/mkstartside
 Environment=MKSTARTSIDE_CONFIG=/srv/apps/mkstartside/config.yaml
 # Binder på alle grænseflader, ikke 127.0.0.1 som på rpi5 — edge (192.168.0.70)
 # skal kunne nå den. Intet er eksponeret udefra; VPN er sikkerhedsgrænsen.
-ExecStart=/srv/apps/mkstartside/venv/bin/gunicorn --workers 2 --bind 0.0.0.0:8765 startside:app
+# Én proces med tråde, ikke flere workers: cachen i kilder/cache.py lever i
+# processen, så to workers havde hver sin og ramte Google dobbelt så tit.
+# Kalenderne gør ventetid på I/O, ikke CPU, så tråde er nok.
+ExecStart=/srv/apps/mkstartside/venv/bin/gunicorn --workers 1 --threads 4 --bind 0.0.0.0:8765 startside:app
 Restart=on-failure
 RestartSec=5
 
