@@ -1,7 +1,8 @@
 """Hvor længe siden hver backup-disk sidst kørte igennem.
 
-Filen læses her, men skrives af x1: `~/bin/backup/publicer-backup-status.sh`
-skubber den herop efter hver kørsel. Retningen er valgt med vilje. Havde
+Filen læses her, men skrives af x1 og x270: `~/bin/backup/publicer-backup-status.sh`
+skubber den herop efter hver kørsel, og modtageren fletter pr. disk, så den
+nyeste kørsel vinder uanset maskine (feltet `vaert` siger hvilken). Retningen er valgt med vilje. Havde
 startsiden i stedet spurgt x1, ville svaret blive "ukendt", hver gang den
 bærbare var slukket — og advarslen ville altså forsvinde præcis når man har
 været væk længe og derfor IKKE har fået taget backup. Nu står tidsstemplet
@@ -93,7 +94,7 @@ def hent(config_backup):
         disk = meldt.get(navn)
 
         if not disk or not disk.get("tidspunkt"):
-            # Enten er filen slet ikke nået frem, eller også kender x1 ikke
+            # Enten er filen slet ikke nået frem, eller også kender ingen maskine
             # disken. Begge dele er "ingen melding" — ikke "aldrig kørt", for
             # det ved vi netop ikke.
             ud.append({
@@ -124,6 +125,7 @@ def hent(config_backup):
             "tekst": _alder_tekst(alder),
             "resultat": disk.get("resultat") if tilstand == "fejl" else None,
             "tidspunkt": disk["tidspunkt"],
+            "vaert": disk.get("vaert"),
         })
 
     return ud
