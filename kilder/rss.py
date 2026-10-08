@@ -1,6 +1,5 @@
 """Seneste overskrift fra hvert RSS-feed."""
 
-import sys
 from concurrent.futures import ThreadPoolExecutor
 
 import feedparser
@@ -8,24 +7,27 @@ import feedparser
 from . import cache
 
 
+def _laes_feed(feed):
+    parsed = feedparser.parse(feed["url"])
+    if not parsed.entries:
+        # feedparser rejser sjældent selv — et feed der ikke kunne nås, giver
+        # bare ingen poster. Det skal tælle som en fejl, så de gamle overskrifter
+        # bliver stående i stedet for at blive erstattet af ingenting.
+        raise ValueError(f"ingen poster i {feed['titel']}")
+    entry = parsed.entries[0]
+    return {
+        "titel": feed["titel"],
+        "seneste_titel": entry.get("title", "(Ingen titel)"),
+        "seneste_url": entry.get("link", feed["url"]),
+    }
+
+
 def _hent_feed(feed):
-    noegle = f"rss/{feed['url']}"
-    if (gemt := cache.hent(noegle)) is not None:
-        return gemt
-    try:
-        parsed = feedparser.parse(feed["url"])
-        if parsed.entries:
-            entry = parsed.entries[0]
-            resultat = {
-                "titel": feed["titel"],
-                "seneste_titel": entry.get("title", "(Ingen titel)"),
-                "seneste_url": entry.get("link", feed["url"]),
-            }
-            cache.gem(noegle, resultat, ttl=900)
-            return resultat
-    except Exception as e:
-        print(f"RSS-fejl ({feed['titel']}): {e}", file=sys.stderr)
-    return {"titel": feed["titel"], "seneste_titel": None, "seneste_url": None}
+    return cache.hent_eller_opdater(
+        f"rss/{feed['url']}", lambda: _laes_feed(feed),
+        ttl=900, maks_alder=3600,
+        ved_fejl={"titel": feed["titel"], "seneste_titel": None, "seneste_url": None},
+    )
 
 
 def hent(feeds):

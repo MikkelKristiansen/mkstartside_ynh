@@ -1,6 +1,5 @@
 """Dagens begivenheder fra Google-kalendernes ICS-feeds."""
 
-import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime
 
@@ -12,51 +11,54 @@ from dato import TZ
 from . import cache
 
 
-def _hent_kalender(kalender):
+def _laes_kalender(kalender):
     navn = kalender["navn"]
     farve = kalender["farve"]
     url = kalender["ics_url"]
-    noegle = f"kal/{url}/{date.today()}"
-    if (gemt := cache.hent(noegle)) is not None:
-        return gemt
-    try:
-        resp = requests.get(url, timeout=10)
-        resp.raise_for_status()
-        cal = Calendar.from_ical(resp.content)
-        today = date.today()
-        events = recurring_ical_events.of(cal).at(today)
-        resultat = []
-        for e in events:
-            dtstart = e.get("DTSTART").dt
-            dtend = e.get("DTEND").dt if e.get("DTEND") else None
-            hele_dagen = isinstance(dtstart, date) and not isinstance(dtstart, datetime)
-            if hele_dagen:
-                start_str = None
-                slut_str = None
+    resp = requests.get(url, timeout=10)
+    resp.raise_for_status()
+    cal = Calendar.from_ical(resp.content)
+    today = date.today()
+    events = recurring_ical_events.of(cal).at(today)
+    resultat = []
+    for e in events:
+        dtstart = e.get("DTSTART").dt
+        dtend = e.get("DTEND").dt if e.get("DTEND") else None
+        hele_dagen = isinstance(dtstart, date) and not isinstance(dtstart, datetime)
+        if hele_dagen:
+            start_str = None
+            slut_str = None
+        else:
+            if dtstart.tzinfo is None:
+                dtstart = dtstart.replace(tzinfo=TZ)
+            dtstart = dtstart.astimezone(TZ)
+            start_str = dtstart.strftime("%H:%M")
+            if dtend:
+                if dtend.tzinfo is None:
+                    dtend = dtend.replace(tzinfo=TZ)
+                slut_str = dtend.astimezone(TZ).strftime("%H:%M")
             else:
-                if dtstart.tzinfo is None:
-                    dtstart = dtstart.replace(tzinfo=TZ)
-                dtstart = dtstart.astimezone(TZ)
-                start_str = dtstart.strftime("%H:%M")
-                if dtend:
-                    if dtend.tzinfo is None:
-                        dtend = dtend.replace(tzinfo=TZ)
-                    slut_str = dtend.astimezone(TZ).strftime("%H:%M")
-                else:
-                    slut_str = None
-            resultat.append({
-                "titel": str(e.get("SUMMARY", "(Uden titel)")),
-                "start": start_str,
-                "slut": slut_str,
-                "hele_dagen": hele_dagen,
-                "kalender_navn": navn,
-                "kalender_farve": farve,
-            })
-        cache.gem(noegle, resultat, ttl=300)
-        return resultat
-    except Exception as e:
-        print(f"Kalender-fejl ({navn}): {e}", file=sys.stderr)
-        return []
+                slut_str = None
+        resultat.append({
+            "titel": str(e.get("SUMMARY", "(Uden titel)")),
+            "start": start_str,
+            "slut": slut_str,
+            "hele_dagen": hele_dagen,
+            "kalender_navn": navn,
+            "kalender_farve": farve,
+        })
+    return resultat
+
+
+def _hent_kalender(kalender):
+    # Nøglen bruger navnet, ikke ics_url: adressen er en hemmelighed, og
+    # cachen skriver nøglen i loggen, når en hentning fejler. Datoen er med, så
+    # en ny dag aldrig viser gårsdagens aftaler.
+    noegle = f"kal/{kalender['navn']}/{date.today()}"
+    return cache.hent_eller_opdater(
+        noegle, lambda: _laes_kalender(kalender),
+        ttl=300, maks_alder=900, ved_fejl=[],
+    )
 
 
 def hent(kalendere):

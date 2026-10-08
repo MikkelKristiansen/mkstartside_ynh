@@ -12,18 +12,25 @@ from . import cache
 FELTER = {"lxc": "lxc", "docker": "docker", "units": "unit", "diske": "disk"}
 
 
-def _hent_vaert(server):
-    noegle = f"server/{server['url']}"
-    if (gemt := cache.hent(noegle)) is not None:
-        return gemt
+def _spoerg_vaert(server):
+    # Rejser aldrig: "svarer ikke" er også et svar, og det skal caches som et.
+    # Før blev det ikke gemt, og en nede vært kostede derfor hver eneste
+    # sidevisning de fulde 2 sekunders timeout.
     try:
         resp = requests.get(server["url"], timeout=2)
         resp.raise_for_status()
-        resultat = {"navn": server["navn"], "online": True, **resp.json()}
-        cache.gem(noegle, resultat, ttl=30)
-        return resultat
+        return {"navn": server["navn"], "online": True, **resp.json()}
     except Exception:
         return {"navn": server["navn"], "online": False}
+
+
+def _hent_vaert(server):
+    # Status må højst være 3 minutter gammel, før vi hellere venter: en grøn
+    # prik for noget, der er gået ned, er værre end et sekunds ventetid.
+    return cache.hent_eller_opdater(
+        f"server/{server['url']}", lambda: _spoerg_vaert(server),
+        ttl=30, maks_alder=180,
+    )
 
 
 def hent(servere):

@@ -1,10 +1,12 @@
 [Unit]
-Description=Hold mkstartsides cache varm hvert 4. minut
+Description=Hold mkstartsides cache varm hvert minut
 
 [Timer]
-# Under kalenderens TTL på 5 minutter (kilder/kalender.py).
+# Hvert minut, så status (maks_alder 3 min) altid når at blive fornyet i
+# baggrunden. 4 minutter var for sjældent: et kald på en endnu gyldig post
+# fornyer ingenting, og posten udløb så mellem to kald.
 OnBootSec=1min
-OnUnitActiveSec=4min
+OnUnitActiveSec=1min
 AccuracySec=10s
 
 [Install]

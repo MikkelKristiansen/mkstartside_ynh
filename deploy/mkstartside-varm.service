@@ -1,9 +1,11 @@
 [Unit]
 Description=Hold mkstartsides cache varm
-# Kilderne hentes først, når nogen åbner siden, og kalenderen gemmes kun i 5
-# minutter. Uden dette ventede den første visning efter en pause 3-4 sekunder
-# (op til 10, når Google er langsom) på kalendere og status. Et lokalt kald
-# hvert 4. minut betyder, at den ventetid aldrig rammer et menneske.
+# Siden viser udløbne data med det samme og henter nye i baggrunden (se
+# kilder/cache.py) — men kun op til en grænse pr. kilde (status: 3 minutter).
+# Er data ældre, venter visningen. Uden et kald med jævne mellemrum ville
+# første visning efter en pause altså stadig vente 3-4 sekunder. Dette kald
+# hvert minut sætter baggrundshentningen i gang, så grænsen aldrig nås, og
+# så det er timeren og ikke et menneske, der venter.
 After=mkstartside.service
 Requires=mkstartside.service
 
